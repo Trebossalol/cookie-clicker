@@ -12,14 +12,14 @@ export default {
     screens: {
       Root: {
         screens: {
-          TabOne: {
+          Clicker: {
             screens: {
-              TabOneScreen: 'one',
+              Clicker: 'one',
             },
           },
-          TabTwo: {
+          Store: {
             screens: {
-              TabTwoScreen: 'two',
+              Store: 'two',
             },
           },
         },
