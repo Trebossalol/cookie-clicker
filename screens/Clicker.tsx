@@ -8,12 +8,17 @@ import { useGameData } from '../game/game';
 
 import Finger from '../game/items/Finger';
 import CookieStore from '../game/items/Cookie_Store'
+import CookieFactory from '../game/items/Cookie_Factory'
+import {ItemList} from '../game/StoreItems'
+import getStorable from '../util/getStorable';
 
 export function fromNum(number: number): string {
   const isK = number > 999
   const isMill = number > 999999
+  const isMillia = number > 999999999
 
-  return isMill ? 
+  return isMillia ? 
+    `${number/1000000000} Billion.` : isMill ? 
     `${number/1000000} Mio.` : isK ? 
     `${number/1000} K` : number.toString()
 
@@ -37,14 +42,38 @@ export default () => {
       game.addToTotalCookie(amount)
     }
 
-    React.useEffect(() => {
-      const cookieStore = game.cachedItems.find(e => e.id === CookieStore.id)
-      if (!cookieStore) return
-      let interval = setInterval(() => {
-        addCookie(((cookieStore?.level || 2) / 2)  * 2)
-      }, 1000)
+    function setupListeners(): () => void {
+      const intervals: any[] = []
+      getStorable()
+        .then(({ cookies: current, totalCookies }) => {
+          game.cachedItems.forEach((cache) => {
+            const item = ItemList.find(e => e.id === cache.id)
+            if (!item) return
 
-      return () => clearInterval(interval)
+            setInterval(() => {
+              addCookie(item.onTick({ 
+                cache, 
+                cachedItems: game.cachedItems, 
+                cookieData: { 
+                  current, 
+                  total: totalCookies 
+                } 
+              }))
+
+            }, 1000)
+          })
+        })
+
+      function cleanup(): void {
+        intervals.forEach(i => clearInterval(i))
+      }
+
+      return cleanup
+    }
+
+    React.useEffect(() => {
+      const cleanup = setupListeners()
+      return cleanup
     }, [game.cachedItems])
 
     return (

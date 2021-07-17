@@ -8,6 +8,8 @@ import TabBarIcon from '../constants/TabBarIcon'
 import Seperator from '../components/Seperator';
 import useLoadingSpinner from '../hooks/useLoadingSpinner';
 import getStorable from '../util/getStorable';
+import { fromNum } from './Clicker'
+import { useSetUpdatePending } from '../context/UpdateContext';
 
 export default () => {
 
@@ -21,6 +23,11 @@ export default () => {
 
   React.useEffect(() => {
     updateStates()
+    let interval = setInterval(updateStates, 500)
+
+    return () => {
+      clearInterval(interval)
+    }
   }, [])
 
   async function updateStates() {
@@ -35,7 +42,15 @@ export default () => {
   return (
       <FlatList
           data={listData}
-          ListHeaderComponent={Spinner}
+          ListHeaderComponent={() => (
+            <View style={{ alignItems: 'center'}}>
+              <Spinner/>
+              <View style={styles.listHeader}>
+                  <MonoText style={styles.cookieAmount}>Cookies: {fromNum(cookieData.current)}</MonoText>
+              </View>
+              <Seperator style={{ width: '80%' }}/>
+            </View>
+          )}
           renderItem={info => <ItemRenderer 
                                   cookieData={cookieData} 
                                   cachedItems={cachedItems} 
@@ -49,6 +64,11 @@ export default () => {
           ListEmptyComponent={() => (
             <ReactNativeView style={{ justifyContent: 'center', alignItems: 'center' }}>
               <MonoText style={{ textAlign: 'center', marginTop: 340, fontSize: 20, width: '80%', }}>Currently there's nothing relevant here. Please take a look later ;)</MonoText>
+            </ReactNativeView>
+          )}
+          ListFooterComponent={() => (
+            <ReactNativeView style={{ justifyContent: 'center', alignItems: 'center' }}>
+              <MonoText style={{ textAlign: 'center', marginTop: 340, fontSize: 20, width: '80%', }}>Soon here will be more.</MonoText>
             </ReactNativeView>
           )}
           refreshControl={
@@ -73,6 +93,8 @@ interface ItemRendererProps {
 }
 
 function ItemRenderer({ index, item, cachedItems, cookieData, expandedIndex, setExpandedIndex, updateStates, setLoading }: ItemRendererProps) {
+
+  const setUpdatePending = useSetUpdatePending()
 
   const [expanded, setExpanded] = React.useState<boolean>(false)
 
@@ -141,6 +163,7 @@ function ItemRenderer({ index, item, cachedItems, cookieData, expandedIndex, set
 
    }
 
+   setUpdatePending(true)
    await updateStates()
    setLoading(false)
    ToastAndroid.show('Erfolg!', ToastAndroid.SHORT)
@@ -193,6 +216,17 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  listHeader: {
+    height: 60,
+    textAlign: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+  },
+  cookieAmount: {
+    fontSize: 30,
+    paddingVertical: 5,
+
   },
   itemBaseView: {
     padding: 12,

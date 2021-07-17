@@ -12,6 +12,7 @@ import NotFoundScreen from '../screens/NotFoundScreen';
 import { RootStackParamList } from '../types';
 import BottomTabNavigator from './BottomTabNavigator';
 import LinkingConfiguration from './LinkingConfiguration';
+import { UpdatePendingProvider as UpdateProvider } from '../context/UpdateContext'
 
 export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
   return (

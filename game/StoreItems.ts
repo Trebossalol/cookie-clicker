@@ -1,6 +1,7 @@
 import CookieStore from './items/Cookie_Store'
 import CookieFactory from './items/Cookie_Factory'
 import Finger from './items/Finger'
+import CookieMultiplier from './items/Cookie_Multiplier'
 
 export interface CookieData {
   current: number
@@ -13,8 +14,9 @@ export interface Item {
     name: string | DynamicItemName
     description: string
     id: string
-    unlocked: ({ cache, cachedItems, cookieData }: ItemDynamicProps) => boolean
-    calcNextPrice: ({ cache, cachedItems, cookieData }: ItemDynamicProps) => number
+    unlocked: (data: ItemDynamicProps) => boolean
+    calcNextPrice: (data: ItemDynamicProps) => number
+    onTick: (data: ItemDynamicProps) => number
 }
 export type ItemList = Item[]
 
@@ -22,6 +24,7 @@ export const ItemList: ItemList = [
     Finger,
     CookieStore,
     CookieFactory,
+    CookieMultiplier
 ]
 
 export interface CachedItem {

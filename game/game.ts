@@ -3,6 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Item, ItemList, CachedItem, CachedItemList } from './StoreItems'
 import getStorable from '../util/getStorable';
 import { Alert, ToastAndroid } from 'react-native';
+import { useSetUpdatePending, useUpdatePending } from '../context/UpdateContext';
 
 export const store = async <T>(key: string, value: T | any): Promise<T> => {
     return new Promise(async (resolve, reject) => {
@@ -60,27 +61,35 @@ export interface useGameDataHookReturnValue {
 
 export function useGameData(optionsToPass?: useGameDataOptions): useGameDataHookReturnValue {
 
+    const setUpdatePending = useSetUpdatePending()
+    const updatePending = useUpdatePending()
+
     const [options, setOptions] = React.useState<useGameDataOptions>(defaultUseGameDataOptions)
     const [cachedItems, setCachedItems] = React.useState<CachedItemList>([])
 
     const [cookies, setCookies] = React.useState(0)
     const [totalCookies, setTotalCookies] = React.useState<number>(0)
-
-    const cacheInterval = React.useRef<any>()
   
     React.useEffect(() => {
         const options = { ...defaultUseGameDataOptions, ...optionsToPass }
         setOptions(options)
         
-        //cacheInterval.current = setInterval(cacheData, options.cacheInterval)
+        //let interval = setInterval(loadGameData, 500)
 
         loadGameData()
 
         return () => {
-            //clearInterval(cacheInterval.current)
+            //clearInterval(interval)
         }
 
     }, [])
+
+    React.useEffect(() => {
+        if (updatePending === true ) { 
+            loadGameData()
+            setUpdatePending(false)
+        }
+    }, [updatePending])
 
     React.useEffect(() => {
         cacheData()
