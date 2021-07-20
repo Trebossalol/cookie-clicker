@@ -1,4 +1,4 @@
-import { Item } from '../StoreItems'
+import { Item } from '../types'
 import Finger from './Finger'
 
 const item: Item = {
@@ -9,8 +9,8 @@ const item: Item = {
         const finger = cachedItems.find(e => e.id === Finger.id)
         return cookieData.total > 1000 && (finger?.level || 0) > (cache?.level || 1) * 2
     },
-    calcNextPrice: ({ cache }) => (cache?.level || 1) * 500,
-    onTick: ({ cache }) => ((cache?.level || 2) / 2)  * 2
+    calcNextPrice: ({ cache }) => (cache?.level || 1) * ((cache?.level || 1) < 10 ? 500 : 10000),
+    onTick: ({ cache }) => ((cache?.level || 2) / 2)  * 3
 }
 
 export default item

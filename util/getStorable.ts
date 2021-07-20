@@ -1,9 +1,10 @@
+import { useWorldData } from "../context/WorldContext"
 import { GameDataRegistry, retrieve } from "../game/game"
-import { CachedItemList } from "../game/StoreItems"
+import { CachedItemList, WorldDataID } from "../game/types"
 
-export default async () => {
-    const cookies = await retrieve<number>(GameDataRegistry.cookies, 0)
-    const totalCookies = await retrieve<number>(GameDataRegistry.totalCookies, 0)
-    const cachedItems = await retrieve<CachedItemList>(GameDataRegistry.cachedItems, [])
+export default async (wid: WorldDataID) => {
+    const cookies = await retrieve<number>(GameDataRegistry.cookies(wid), 0)
+    const totalCookies = await retrieve<number>(GameDataRegistry.totalCookies(wid), 0)
+    const cachedItems = await retrieve<CachedItemList>(GameDataRegistry.cachedItems(wid), [])
     return { cookies, totalCookies, cachedItems}
 }

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { StyleSheet, FlatList, RefreshControl, TouchableHighlight, ToastAndroid, Button, TouchableNativeFeedback, View as ReactNativeView } from 'react-native';
 import { MonoText } from '../components/StyledText';
 import { View, Text } from '../components/Themed';
-import { ItemList, Item, CachedItemList, CachedItem, CookieData } from '../game/StoreItems'
+import { ItemList, Item, CachedItemList, CachedItem, CookieData, WorldData, LevelDetails } from '../game/types'
 import { retrieve, GameDataRegistry, store } from '../game/game'
 import TabBarIcon from '../constants/TabBarIcon'
 import Seperator from '../components/Seperator';
@@ -10,12 +10,21 @@ import useLoadingSpinner from '../hooks/useLoadingSpinner';
 import getStorable from '../util/getStorable';
 import { fromNum } from './Clicker'
 import { useSetUpdatePending } from '../context/UpdateContext';
+import getBoxShadow from '../util/getBoxShadow';
+import WorldRegister from '../game/worlds/index'
+import { useWorldData } from '../context/WorldContext';
+import { ExtendedLevelDetails, useLevelDetails } from '../context/LevelContext';
+
+type Callbackfn = (levelDetails: LevelDetails) => LevelDetails
+type UpdateLevelDetailsFn = (cb: Callbackfn) => Promise<void>
 
 export default () => {
 
   const { Spinner, setLoading } = useLoadingSpinner()
+  const worldData = useWorldData()
+  const levelDetails = useLevelDetails()
 
-  const [listData, setListData] = React.useState(ItemList)
+  const [listData, setListData] = React.useState<ItemList>()
   const [cachedItems, setCachedItems] = React.useState<CachedItemList>([])
   const [cookieData, setCookieData] = React.useState<CookieData>({ current: 0, total: 0 })
   const [refreshing] = React.useState<boolean>(false)
@@ -23,15 +32,16 @@ export default () => {
 
   React.useEffect(() => {
     updateStates()
-    let interval = setInterval(updateStates, 500)
+    let interval = setInterval(updateStates, 1000)
+    setListData(WorldRegister[worldData.id].items)
 
     return () => {
       clearInterval(interval)
     }
-  }, [])
+  }, [worldData.id])
 
   async function updateStates() {
-    const { cachedItems, cookies, totalCookies } = await getStorable()
+    const { cachedItems, cookies, totalCookies } = await getStorable(worldData.id)
     setCachedItems(cachedItems)
     setCookieData({
       current: cookies,
@@ -39,14 +49,14 @@ export default () => {
     })
   }
 
-  return (
+  return !listData ? (null) : (
       <FlatList
           data={listData}
           ListHeaderComponent={() => (
             <View style={{ alignItems: 'center'}}>
               <Spinner/>
               <View style={styles.listHeader}>
-                  <MonoText style={styles.cookieAmount}>Cookies: {fromNum(cookieData.current)}</MonoText>
+                  <MonoText style={styles.cookieAmount}>Cookies: {fromNum(Math.round(cookieData.current))}</MonoText>
               </View>
               <Seperator style={{ width: '80%' }}/>
             </View>
@@ -55,6 +65,8 @@ export default () => {
                                   cookieData={cookieData} 
                                   cachedItems={cachedItems} 
                                   expandedIndex={expandedIndex}
+                                  worldData={worldData}
+                                  levelDetails={levelDetails}
                                   setExpandedIndex={setExpandedIndex}
                                   updateStates={updateStates}
                                   setLoading={setLoading}
@@ -85,14 +97,16 @@ interface ItemRendererProps {
   index: number
   item: Item
   cachedItems: CachedItemList
+  worldData: WorldData
   cookieData: CookieData
   expandedIndex: number|null
+  levelDetails: ExtendedLevelDetails
   setExpandedIndex: React.Dispatch<React.SetStateAction<number | null>>
   updateStates: () => Promise<void>
   setLoading: (state: boolean, delayMS?: number) => void
 }
 
-function ItemRenderer({ index, item, cachedItems, cookieData, expandedIndex, setExpandedIndex, updateStates, setLoading }: ItemRendererProps) {
+function ItemRenderer({ index, item, cachedItems, cookieData, expandedIndex, setExpandedIndex, updateStates, setLoading, levelDetails, worldData }: ItemRendererProps) {
 
   const setUpdatePending = useSetUpdatePending()
 
@@ -106,8 +120,8 @@ function ItemRenderer({ index, item, cachedItems, cookieData, expandedIndex, set
       ...item
     }
   }, [cachedItems, item])
-  const price = React.useMemo(() => item?.calcNextPrice({ cachedItems, cookieData, cache }), [item, cachedItems, cookieData, cache])
-  const itemUnlocked = React.useMemo(() => item?.unlocked({ cachedItems, cookieData, cache }), [cachedItems, cookieData])
+  const price = React.useMemo(() => item?.calcNextPrice({ cachedItems, cookieData, cache, worldData }), [item, cachedItems, cookieData, cache])
+  const itemUnlocked = React.useMemo(() => (item?.unlocked({ cachedItems, cookieData, cache, worldData })) && ((cache?.maxLvl || 50) > (cache?.maxLvl ? cache?.level : -1)), [cachedItems, cookieData, cache])
   const itemName = React.useMemo(() => 
     !cache ? 
       item.name : 
@@ -128,14 +142,16 @@ function ItemRenderer({ index, item, cachedItems, cookieData, expandedIndex, set
   async function buyOrUpgradeItem(): Promise<void> {
 
     async function updateLocalCache(cachedItemsList: CachedItemList) {
-      await store(GameDataRegistry.cachedItems, cachedItemsList)
+      await store(GameDataRegistry.cachedItems(worldData.id), cachedItemsList)
     }
 
     if (price > cookieData.current) return ToastAndroid.show('You need more cookies', ToastAndroid.SHORT)
 
     setLoading(true)
 
-    await store(GameDataRegistry.cookies, cookieData.current - price)
+    await levelDetails.addXp(5)
+
+    await store(GameDataRegistry.cookies(worldData.id), cookieData.current - price)
 
     if (cache === undefined) {
 
@@ -160,7 +176,6 @@ function ItemRenderer({ index, item, cachedItems, cookieData, expandedIndex, set
       })
 
       await updateLocalCache(current)
-
    }
 
    setUpdatePending(true)
@@ -168,6 +183,10 @@ function ItemRenderer({ index, item, cachedItems, cookieData, expandedIndex, set
    setLoading(false)
    ToastAndroid.show('Erfolg!', ToastAndroid.SHORT)
   }
+
+  React.useEffect(() => {
+    console.log(`Loading store item ${item.id}`)
+  }, [])
 
   return (
     <TouchableNativeFeedback onPress={touchHandler}>
@@ -188,7 +207,7 @@ function ItemRenderer({ index, item, cachedItems, cookieData, expandedIndex, set
               disabled={!itemUnlocked}
               title={
                 !itemUnlocked ? 
-                  cache ? 'Upgrade locked' : 'Locked' :
+                  cache ? 'Upgrade locked' : 'Unavailable' :
                 cache ? `Upgrade: ${price} Cookies` : `Buy: ${price} Cookies`
               }
               onPress={buyOrUpgradeItem}
@@ -230,13 +249,11 @@ const styles = StyleSheet.create({
   },
   itemBaseView: {
     padding: 12,
-    marginBottom: 7
+    marginTop: 18,
+    ...getBoxShadow(9)
   },
   itemUnavailableView: {
     backgroundColor: '#9c9c9c'
-  },
-  itemView: {
-    
   },
   itemHeaderView: {
     justifyContent: 'space-between', 

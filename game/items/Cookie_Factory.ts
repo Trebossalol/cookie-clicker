@@ -1,4 +1,4 @@
-import { Item } from '../StoreItems'
+import { Item } from '../types'
 import CookieStore from './Cookie_Store'
 
 const item: Item = {
@@ -11,7 +11,7 @@ const item: Item = {
     },
     calcNextPrice: ({ cache, cachedItems }) => {
         const cookieStore = cachedItems.find(e => e.id === CookieStore.id)
-        return ((cache?.level || 1) + (cookieStore?.level || 2)) * 1000
+        return ((cache?.level || 1) + (cookieStore?.level || 2)) * ((cache?.level || 1) < 5 ? 1000 : 15000)
     },
     onTick: ({ cache }) => (cache?.level || 1) * 80 ^2
 }

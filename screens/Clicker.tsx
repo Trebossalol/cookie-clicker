@@ -1,105 +1,125 @@
 import * as React from 'react';
-import { StyleSheet, Image, ScrollView, RefreshControl, Button } from 'react-native';
-import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
-import EditScreenInfo from '../components/EditScreenInfo';
+import { StyleSheet, Image, ScrollView, RefreshControl, View as ReactNativeView } from 'react-native';
+import { TouchableWithoutFeedback, TouchableHighlight } from 'react-native-gesture-handler';
 import { MonoText } from '../components/StyledText';
 import { Text, View } from '../components/Themed';
+import { useLevelDetails } from '../context/LevelContext';
+import { useWorldData } from '../context/WorldContext';
 import { useGameData } from '../game/game';
-
 import Finger from '../game/items/Finger';
-import CookieStore from '../game/items/Cookie_Store'
-import CookieFactory from '../game/items/Cookie_Factory'
-import {ItemList} from '../game/StoreItems'
-import getStorable from '../util/getStorable';
+import getBoxShadow from '../util/getBoxShadow';
 
 export function fromNum(number: number): string {
   const isK = number > 999
   const isMill = number > 999999
   const isMillia = number > 999999999
 
+
   return isMillia ? 
-    `${number/1000000000} Billion.` : isMill ? 
-    `${number/1000000} Mio.` : isK ? 
-    `${number/1000} K` : number.toString()
+    `${(number/1000000000).toFixed(3)} Billion.` : isMill ? 
+    `${(number/1000000).toFixed(3)} Mio.` : isK ? 
+    `${(number/1000).toFixed(3)} K` : `${number.toString()}`
 
 }
 
-export default () => {
+interface ClickerProps {
+  navigation: any
+}
 
-    const [refreshing] = React.useState(false)
+export default (props: ClickerProps) => {
 
-    const game = useGameData()
+  const [randomMultiplicator, setRandomMultiplicator] = React.useState(1)
+  const [refreshing] = React.useState(false)
 
-    function handleClick() {
-      let amount = 1
-      const fingerLevel = (game.cachedItems.find(e => e.id === Finger.id) || {}).level
-      if (fingerLevel != undefined) amount += fingerLevel
-      addCookie(amount)
-    }
+  const game = useGameData()
+  const worldData = useWorldData()
+  const levelDetails = useLevelDetails()
 
-    function addCookie(amount: number): void {
-      game.setCookies(e => e + amount)
-      game.addToTotalCookie(amount)
-    }
+  React.useEffect(() => {
+    let interval = setInterval(() => {
 
-    function setupListeners(): () => void {
-      const intervals: any[] = []
-      getStorable()
-        .then(({ cookies: current, totalCookies }) => {
-          game.cachedItems.forEach((cache) => {
-            const item = ItemList.find(e => e.id === cache.id)
-            if (!item) return
+      let randNum = Math.random() * (100 - 1) + 1
 
-            setInterval(() => {
-              addCookie(item.onTick({ 
-                cache, 
-                cachedItems: game.cachedItems, 
-                cookieData: { 
-                  current, 
-                  total: totalCookies 
-                } 
-              }))
+      if      (randNum > 95) setRandomMultiplicator(5)
+      else if (randNum > 80) setRandomMultiplicator(4)
+      else if (randNum > 60) setRandomMultiplicator(3)
+      else setRandomMultiplicator(2)
 
-            }, 1000)
-          })
-        })
+      setTimeout(() => setRandomMultiplicator(1), 15000)
 
-      function cleanup(): void {
-        intervals.forEach(i => clearInterval(i))
-      }
+    }, 30000)
 
-      return cleanup
-    }
+    return () => clearInterval(interval)
+  }, [])
 
-    React.useEffect(() => {
-      const cleanup = setupListeners()
-      return cleanup
-    }, [game.cachedItems])
+  function handleClick() {
+    let amount = 1
+    const fingerLevel = (game.cachedItems.find(e => e.id === Finger.id) || {}).level
+    if (fingerLevel != undefined) amount += fingerLevel
+    addCookie(amount)
+  }
 
-    return (
-        <ScrollView
-          refreshControl={
-            <RefreshControl 
-              onRefresh={game.sync}
-              refreshing={refreshing}
-              />
-          }
-          contentContainerStyle={styles.container}>
-          <TouchableWithoutFeedback
-            onPress={handleClick}
-            >
-            <Image 
-                source={require('../assets/images/cookie.png')}
-                style={styles.cookie}
-                accessibilityLabel='Cookie Icon'
-              />
-            </TouchableWithoutFeedback>
-            <MonoText style={{ fontSize: 33, height: 50 }}>{fromNum(game.cookies)}</MonoText>
-            <TouchableWithoutFeedback>
-              <Button onPress={game.cleanAccount} title='Daten löschen'/>
-            </TouchableWithoutFeedback>
-        </ScrollView>
-    );
+  async function addCookie(amount: number, ) {
+    game.addCookies(amount, [randomMultiplicator])
+  }
+
+  function navigateTo(location: string, params?: object): void {
+    props.navigation.navigate(location, params)
+  }
+
+  return (
+      <ScrollView
+        refreshControl={
+          <RefreshControl 
+            onRefresh={game.sync}
+            refreshing={refreshing}
+            />
+        }
+        contentContainerStyle={styles.container}>
+
+          <ReactNativeView style={styles.headerView}>
+            <ReactNativeView style={{
+              ...styles.levelBar,
+              width: `${levelDetails.xpRelation < 20 ? 20 : levelDetails.xpRelation}%`
+            }}>
+              <MonoText style={styles.xpamount}>
+                {levelDetails.xp}/{levelDetails.xpRequired} XP
+              </MonoText>
+            </ReactNativeView>
+          </ReactNativeView>
+
+          <ReactNativeView style={styles.bodyView}>
+
+            <View style={styles.bodyCard}>
+
+              <TouchableWithoutFeedback
+                onPress={handleClick}
+                >
+                <Image 
+                    source={require('../assets/images/cookie.png')}
+                    style={styles.cookie}
+                    accessibilityLabel='Cookie Icon'
+                  />
+              </TouchableWithoutFeedback>
+
+              <MonoText style={{ fontSize: 33, height: 50, width: 300, textAlign: 'center' }}>{game.cookies.toString().split('.')[0]}</MonoText>
+              <MonoText style={{ fontSize: 15, height: 50, width: 300, textAlign: 'center' }}>Dezimal: {game.cookies.toFixed(6).split('.')[1]}</MonoText>
+              <MonoText style={{ textAlign: 'center', fontSize: 25 }}>x{randomMultiplicator}</MonoText>
+
+            </View>
+          
+          </ReactNativeView>
+          
+          <ReactNativeView style={styles.footerView}>
+            <TouchableHighlight onPress={() => navigateTo('Worlds')}>
+              <Image 
+                source={require('../assets/images/world.png')}
+                style={styles.world}
+                />
+            </TouchableHighlight>
+          </ReactNativeView>
+      </ScrollView>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -117,9 +137,54 @@ const styles = StyleSheet.create({
     height: 1,
     width: '80%',
   },
+  headerView: {
+    position: 'absolute',
+    width: '100%',
+    flexDirection: 'row',
+    height: 100,
+    top: 0,
+  },
+  levelBar: {
+    height: 3,
+    backgroundColor: '#4287f5'
+  },
+  xpamount: {
+    textAlign: 'center',
+    fontSize: 17,
+    margin: 5
+  },
+  bodyView: {
+    width: '100%',
+    height: '70%',
+    justifyContent: 'center', 
+    alignItems: 'center'
+  },
+  bodyCard: {
+    paddingVertical: 118,
+    paddingHorizontal: 85,
+    borderRadius: 11,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '90%',
+    ...getBoxShadow(11)
+  },
   cookie: {
     resizeMode: 'stretch',
     height: 200,
     width: 200
-  }
+  },
+  footerView: {
+    position: 'absolute',
+    width: '100%',
+    flexDirection: 'row',
+    height: 100,
+    bottom: 0,
+    justifyContent: 'flex-end'
+  },
+  world: {
+    resizeMode: 'stretch',
+    height: 80,
+    width: 80,
+    margin: 10
+  },
 });

@@ -12,7 +12,9 @@ import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 import Clicker from '../screens/Clicker';
 import GameStore from '../screens/GameStore';
-import { BottomTabParamList, ClickerParamList, StoreParamList } from '../types';
+import Settings from '../screens/Settings';
+import Worlds from '../screens/Worlds';
+import { BottomTabParamList, ClickerParamList, SettingsParamList, StoreParamList } from '../types';
 
 const BottomTab = createBottomTabNavigator<BottomTabParamList>();
 
@@ -27,14 +29,21 @@ export default function BottomTabNavigator() {
         name="Clicker"
         component={ClickerNav}
         options={{
-          tabBarIcon: ({ color }) => <TabBarIcon name="ios-code" color={color} />,
+          tabBarIcon: ({ color }) => <TabBarIcon name="fast-food" color={color} />,
         }}
       />
       <BottomTab.Screen
         name="Store"
         component={StoreNav}
         options={{
-          tabBarIcon: ({ color }) => <TabBarIcon name="ios-code" color={color} />,
+          tabBarIcon: ({ color }) => <TabBarIcon name='cart-outline' color={color} />,
+        }}
+      />
+      <BottomTab.Screen
+        name="Settings"
+        component={SettingsNav}
+        options={{
+          tabBarIcon: ({ color }) => <TabBarIcon name='settings-outline' color={color} />,
         }}
       />
     </BottomTab.Navigator>
@@ -59,6 +68,7 @@ function ClickerNav() {
         component={Clicker}
         options={{ headerTitle: 'Clicker' }}
       />
+      <TabOneStack.Screen name='Worlds' component={Worlds} options={{ title: 'Worlds' }} />
     </TabOneStack.Navigator>
   );
 }
@@ -74,5 +84,20 @@ function StoreNav() {
         options={{ headerTitle: 'Store' }}
       />
     </TabTwoStack.Navigator>
+  );
+}
+
+
+const TabThreeStack = createStackNavigator<SettingsParamList>();
+
+function SettingsNav() {
+  return (
+    <TabThreeStack.Navigator>
+      <TabThreeStack.Screen
+        name="Settings"
+        component={Settings}
+        options={{ headerTitle: 'Store' }}
+      />
+    </TabThreeStack.Navigator>
   );
 }
