@@ -160,7 +160,7 @@ function ItemRenderer({ index, item, cachedItems, cookieData, expandedIndex, set
         type: cache === undefined ? 'buy' : 'upgrade' 
       }
     }); 
-    else levelDetails.addXp(getRandNumber(1, 5))
+    else levelDetails.addXp(Math.round(getRandNumber(1, 5)))
 
     await store(GameDataRegistry.cookies(worldData.id), cookieData.current - price)
 

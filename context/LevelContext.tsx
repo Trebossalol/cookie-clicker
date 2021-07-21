@@ -10,11 +10,11 @@ const DEFAULT: ExtendedLevelDetails = {
     xpRelation: 0,
     xpRequired: 0,
     addXp: () => Promise.resolve(),
-    bindCallback: () => {},
-    unbindCallback: () => {}
+    bindCallback: () => { },
+    unbindCallback: () => { }
 }
 
-export type EventName = 'LEVEL_UP' 
+export type EventName = 'LEVEL_UP'
 export type BindCallbackProps = { level: number }
 export type BindCallbackParamCb = (props: BindCallbackProps) => void
 export type BindEventCallback = (uniqeId: string, event: EventName, callback: BindCallbackParamCb) => void
@@ -46,7 +46,7 @@ export function LevelProvider(props: any) {
     const [level, setLevel] = React.useState<number>(1)
     const [callbacks, setCallbacks] = React.useState<CallbackState[]>([])
 
-    const xpRequired = React.useMemo(() => Math.pow(level + 2, 3), [level])
+    const xpRequired = React.useMemo(() => Math.round(Math.pow(level + 3, 3)), [level])
     const xpRelation = React.useMemo(() => xp / xpRequired, [xp, xpRequired])
     const details = React.useMemo<ExtendedLevelDetails>(() => ({ level, xp, xpRequired, xpRelation, addXp, bindCallback, unbindCallback }), [xp, level, xpRequired, xpRelation])
     const levelDetails = React.useMemo<LevelDetails>(() => ({ xp, level }), [xp, level])
@@ -86,7 +86,7 @@ export function LevelProvider(props: any) {
 
     function bindCallback(uniqeId: string, event: EventName, callback: BindCallbackParamCb) {
         setCallbacks(list => [...list, {
-            callback, 
+            callback,
             event,
             id: uniqeId
         }])

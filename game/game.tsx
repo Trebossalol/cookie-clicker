@@ -54,7 +54,7 @@ export function GameProvider(props: GameProviderProps) {
     React.useEffect(() => {
         loadGameData()
         levelDetails.bindCallback(callbackEventName, 'LEVEL_UP', ({ level }) => {
-            const amount = Math.round(Math.pow(level + 1, 2) * 19)
+            const amount = Math.round(Math.pow(level + 1, 2) * (level >= 10 ? 65 : 7))
             addCookies(amount)
             ToastAndroid.show(`Du hast ${amount} Cookies erhalten!`, ToastAndroid.SHORT)
         })

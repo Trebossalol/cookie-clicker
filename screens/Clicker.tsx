@@ -28,14 +28,14 @@ export default (props: ClickerProps) => {
 
       let randNum = Math.random() * (100 - 1) + 1
 
-      if      (randNum > getRandNumber(90, 95)) setRandomMultiplicator(5)
-      else if (randNum > getRandNumber(75, 85)) setRandomMultiplicator(4)
-      else if (randNum > 60) setRandomMultiplicator(3)
+      if      (randNum > 97) setRandomMultiplicator(5)
+      else if (randNum > 88) setRandomMultiplicator(4)
+      else if (randNum > 80) setRandomMultiplicator(3)
       else setRandomMultiplicator(2)
 
-      setTimeout(() => setRandomMultiplicator(1), getRandNumber(12000, 25000))
+      setTimeout(() => setRandomMultiplicator(1), getRandNumber(8000, 20000))
 
-    }, getRandNumber(30000, 50000))
+    }, getRandNumber(40000, 70000))
 
     return () => clearInterval(interval)
   }, [])
@@ -45,7 +45,7 @@ export default (props: ClickerProps) => {
     const fingerLevel = (game.cachedItems.find(e => e.id === Finger.id) || {}).level
     if (fingerLevel != undefined) amount += fingerLevel
     addCookie(amount)
-    levelDetails.addXp(getRandNumber(1, 2.5) * randomMultiplicator)
+    levelDetails.addXp(Math.round(getRandNumber(1, 2.5) * randomMultiplicator))
   }
 
   const addCookie = React.useCallback((amount: number, ) => {
@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
     height: 25,
     margin: 0,
     backgroundColor: '#4287f5',
-    borderRadius: 7
+    borderRadius: 7,
   },
   headerLevelDetails: {
     marginTop: 5,

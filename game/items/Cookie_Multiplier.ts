@@ -17,7 +17,7 @@ const item: Item = {
     },
     calcNextPrice: ({ cache, cachedItems }) => {
         const cookieFactory = cachedItems.find(e => e.id === CookieFactory.id)
-        let price = Math.pow((cache?.level || 1) * 55, 1.5)
+        let price = Math.pow((cache?.level || 1) * 190, 2)
         if ((cookieFactory?.level || 1) >= 25) price *= .7
         return price
     },
