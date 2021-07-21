@@ -5,7 +5,11 @@ const item: Item = {
     name: 'Cookie Teleporter',
     description: 'This item will teleport random amounts of cookies into your account.',
     id: '9174968b-b68c-4098-861c-adc05b8e1a09',
-    unlocked: ({ cookieData }) => cookieData.total > 3000000,
+    requirements: [
+        'You must have a total amount of cookies above 3 Million',
+        'You must be level 15'
+    ],
+    unlocked: ({ cookieData, levelDetails }) => cookieData.total > 3000000 && levelDetails.level >= 15,
     calcNextPrice: ({ cache }) => {
         const lvl = (cache?.level || 1) + 2
         const raised = Math.pow(lvl, 2)

@@ -1,3 +1,5 @@
+import { ExtendedLevelDetails } from "../context/LevelContext"
+
 export type WorldDataID = '46afa2df-38e0-4c10-a483-9a5de43554de' | 'f971f3c2-5a44-4cca-8b8d-513b2a6302a9' | '5e0fceda-0750-44f8-94ea-a7e83d52fec4'
 
 export interface CookieData {
@@ -17,7 +19,20 @@ export interface LevelDetails {
     xp: number
 }
 
-export type ItemDynamicProps = { cache: CachedItem | undefined, cachedItems: CachedItemList, cookieData: CookieData, worldData: WorldData }
+export interface ItemDynamicProps { 
+    cache: CachedItem | undefined, 
+    cachedItems: CachedItemList, 
+    cookieData: CookieData, 
+    worldData: WorldData 
+    levelDetails: ExtendedLevelDetails
+}
+
+export interface ItemDynamicPropsOnPurchase extends ItemDynamicProps {
+    extended: {
+        itemPrice: number
+        type: 'buy' | 'upgrade'
+    }
+}
 
 export type DynamicItemName = (level: number) => string
 
@@ -26,6 +41,7 @@ export interface Item {
     description: string
     id: string
     maxLvl?: number
+    requirements?: string[]
     co_efficient?: {
         value: number
     }
@@ -33,6 +49,7 @@ export interface Item {
     calcNextPrice: (data: ItemDynamicProps) => number
     onTick?: (data: ItemDynamicProps) => number
     multiplicator?: (data: ItemDynamicProps) => number
+    onPurchase?: (data: ItemDynamicPropsOnPurchase) => void
 }
 
 export type ItemList = Item[]

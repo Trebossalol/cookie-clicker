@@ -121,8 +121,8 @@ function ItemRenderer({ index, item, cachedItems, cookieData, expandedIndex, set
       ...item
     }
   }, [cachedItems, item])
-  const price = React.useMemo(() => Math.round(item?.calcNextPrice({ cachedItems, cookieData, cache, worldData })), [item, cachedItems, cookieData, cache])
-  const itemUnlocked = React.useMemo(() => (item?.unlocked({ cachedItems, cookieData, cache, worldData })) && ((cache?.maxLvl || 50) > (cache?.maxLvl ? cache?.level : -1)), [cachedItems, cookieData, cache])
+  const price = React.useMemo(() => Math.round(item?.calcNextPrice({ cachedItems, cookieData, cache, worldData, levelDetails })), [item, cachedItems, cookieData, cache, levelDetails])
+  const itemUnlocked = React.useMemo(() => (item?.unlocked({ cachedItems, cookieData, cache, worldData, levelDetails })) && ((cache?.maxLvl || 50) > (cache?.maxLvl ? cache?.level : -1)), [cachedItems, cookieData, cache, levelDetails])
   const itemName = React.useMemo(() => 
     !cache ? 
       item.name : 
@@ -150,7 +150,18 @@ function ItemRenderer({ index, item, cachedItems, cookieData, expandedIndex, set
 
     setLoading(true)
 
-    await levelDetails.addXp(5)
+    const onPurchase = item?.onPurchase
+    if (onPurchase != undefined) onPurchase({
+      cache,
+      cachedItems,
+      cookieData,
+      levelDetails,
+      worldData,
+      extended: { 
+        itemPrice: price, 
+        type: cache === undefined ? 'buy' : 'upgrade' 
+      }
+    })
 
     await store(GameDataRegistry.cookies(worldData.id), cookieData.current - price)
 
@@ -222,7 +233,15 @@ function ItemRenderer({ index, item, cachedItems, cookieData, expandedIndex, set
         {expanded && (
           <View style={styles.itemExpanded}>
             <Seperator/>
-            <Text>{item.description}</Text>
+            <Text>{item.description} {'\n'}</Text>
+            {item?.requirements && (
+              <>
+                <MonoText style={{ fontSize: 20 }}>Requirements:</MonoText>
+                <Text>{'\n'}- {
+                  item.requirements?.join('\n- ')  
+                }</Text>
+              </>
+            )}
           </View>
         )}
      

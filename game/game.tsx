@@ -6,8 +6,25 @@ import { useWorldData } from '../context/WorldContext';
 import IncomeManager from './items/Income_Manager'
 import { retrieve, store } from '../util/storage';
 import { GameDataRegistry } from './registry';
+import { useLevelDetails } from '../context/LevelContext';
+import getRandNumber from '../util/getRandNumber';
+import { ToastAndroid } from 'react-native';
 
-export interface UseGameDataHookReturnValue {
+
+const GameContext = React.createContext<GameData>({
+    addCookies: () => {},
+    cacheData: () => Promise.resolve(),
+    cachedItems: [], 
+    cookies: 0,
+    sync: () => Promise.resolve(),
+    totalCookies: 0
+})
+
+export function useGameData() {
+    return React.useContext(GameContext)
+}
+
+export interface GameData {
     cookies: number
     totalCookies: number
     cachedItems: CachedItemList
@@ -16,11 +33,18 @@ export interface UseGameDataHookReturnValue {
     sync: () => Promise<void>
 }
 
-export function useGameData(): UseGameDataHookReturnValue {
+interface GameProviderProps {
+    children: any
+}
+
+const callbackEventName = 'ADD_COOKIES_ON_LEVEL_UP'
+
+export function GameProvider(props: GameProviderProps) {
 
     const setUpdatePending = useSetUpdatePending()
     const updatePending = useUpdatePending()
     const worldData = useWorldData()
+    const levelDetails = useLevelDetails()
 
     const [cachedItems, setCachedItems] = React.useState<CachedItemList>([])
 
@@ -30,6 +54,14 @@ export function useGameData(): UseGameDataHookReturnValue {
 
     React.useEffect(() => {
         loadGameData()
+        levelDetails.bindCallback(callbackEventName, 'LEVEL_UP', ({ level }) => {
+            const amount = Math.pow(level + 1, 2) * 25
+            addCookies(amount)
+            ToastAndroid.show(`Du hast ${amount} Cookies erhalten!`, ToastAndroid.SHORT)
+        })
+        return () => {
+            levelDetails.unbindCallback(callbackEventName)
+        }
     }, [])
 
     React.useEffect(() => {
@@ -91,7 +123,8 @@ export function useGameData(): UseGameDataHookReturnValue {
                     current: cookies, 
                     total: totalCookies 
                 },
-                worldData
+                worldData,
+                levelDetails
             }
             const onTick = item?.onTick
             const earned = onTick == null ? 0 : onTick(props)
@@ -128,12 +161,16 @@ export function useGameData(): UseGameDataHookReturnValue {
         await store(GameDataRegistry.cookies(worldData.id), cookies)
     }
 
-    return {
-        cacheData,
-        cookies,
-        totalCookies,
-        cachedItems,
-        sync: loadGameData,
-        addCookies
-    };
+    return (
+        <GameContext.Provider value={{
+            cacheData,
+            cookies,
+            totalCookies,
+            cachedItems,
+            sync: loadGameData,
+            addCookies
+        }}>
+            {props.children}
+        </GameContext.Provider>
+    )
 }

@@ -8,6 +8,8 @@ import useColorScheme from './hooks/useColorScheme';
 import Navigation from './navigation';
 import { UpdatePendingProvider as UpdateProvider } from './context/UpdateContext'
 import { WorldProvider } from './context/WorldContext';
+import { LevelProvider } from './context/LevelContext';
+import { GameProvider } from './game/game';
 
 export default function App() {
   const isLoadingComplete = useCachedResources();
@@ -18,14 +20,20 @@ export default function App() {
   } else {
     return (
       <SafeAreaProvider>
+
         <UpdateProvider>
           <WorldProvider>
+            <LevelProvider>
+              <GameProvider>
 
-            <Navigation colorScheme={colorScheme} />
-            <StatusBar />
+                <Navigation colorScheme={colorScheme} />
+                <StatusBar />
 
+              </GameProvider>
+            </LevelProvider>
           </WorldProvider>
         </UpdateProvider>
+        
       </SafeAreaProvider>
     );
   }

@@ -7,6 +7,10 @@ const item: Item = {
     description: 'This multiplicator multiplies your cookies that you would usually earn by this, you can earn up to 3x the normal income per tick. This offer is 30% cheaper if your cookie factory is leveled to level 25',
     id: 'ffb8c17d-0521-4068-856c-16e163e745d7',
     maxLvl: 100,
+    requirements: [
+        'You must have a total amount of cookies which was atleast 400k',
+        'Your cookie factory level must be atleast 3'
+    ],
     unlocked: ({ cookieData, cachedItems }) => {
         const cookieFactory = cachedItems.find(e => e.id === CookieFactory.id)
         return cookieData.total > 400000 && (cookieFactory?.level || 0) >= 3

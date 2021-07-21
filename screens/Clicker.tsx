@@ -58,10 +58,10 @@ export default (props: ClickerProps) => {
     const fingerLevel = (game.cachedItems.find(e => e.id === Finger.id) || {}).level
     if (fingerLevel != undefined) amount += fingerLevel
     addCookie(amount)
+    levelDetails.addXp(1 * randomMultiplicator)
   }
 
   const addCookie = React.useCallback((amount: number, ) => {
-    levelDetails.addXp(1)
     game.addCookies(amount, [randomMultiplicator])
   }, [randomMultiplicator])
 
@@ -80,14 +80,22 @@ export default (props: ClickerProps) => {
         contentContainerStyle={styles.container}>
 
           <ReactNativeView style={styles.headerView}>
+
             <ReactNativeView style={{
               ...styles.levelBar,
-              width: `${levelDetails.xpRelation < 16 ? 16 : levelDetails.xpRelation}%`
+              width: `${levelDetails.xpRelation * 100}%`
             }}>
+            </ReactNativeView>
+
+            <ReactNativeView style={styles.headerLevelDetails}>
               <MonoText style={styles.xpamount}>
                 {levelDetails.xp}/{levelDetails.xpRequired} XP
               </MonoText>
+              <MonoText style={styles.level}>
+                Lvl: {levelDetails.level}
+              </MonoText>
             </ReactNativeView>
+
           </ReactNativeView>
 
           <ReactNativeView style={styles.bodyView}>
@@ -106,19 +114,20 @@ export default (props: ClickerProps) => {
 
               <MonoText style={{ fontSize: 33, height: 50, width: 300, textAlign: 'center' }}>{game.cookies.toString().split('.')[0]}</MonoText>
               <MonoText style={{ fontSize: 15, height: 50, width: 300, textAlign: 'center' }}>Dezimal: {game.cookies.toFixed(6).split('.')[1]}</MonoText>
-              <MonoText style={{ textAlign: 'center', fontSize: 25 }}>x{randomMultiplicator} </MonoText>
+              <MonoText style={{ textAlign: 'center', fontSize: 25 }}>x{randomMultiplicator}</MonoText>
+              <MonoText>XP u. Cookies</MonoText>
 
             </View>
           
           </ReactNativeView>
           
           <ReactNativeView style={styles.footerView}>
-            <TouchableHighlight onPress={() => navigateTo('Worlds')}>
+            {/*<TouchableHighlight onPress={() => navigateTo('Worlds')}>
               <Image 
                 source={require('../assets/images/world.png')}
                 style={styles.world}
                 />
-            </TouchableHighlight>
+            </TouchableHighlight>*/}
           </ReactNativeView>
       </ScrollView>
   );
@@ -142,22 +151,34 @@ const styles = StyleSheet.create({
   headerView: {
     position: 'absolute',
     width: '100%',
-    flexDirection: 'row',
-    height: 5,
+    height: 150,
     top: 0,
     justifyContent: 'center', 
     alignItems: 'center',
+    margin: 0,
+    padding: 0
   },
   levelBar: {
-    height: 5,
+    flexDirection: 'row',
+    top: 0,
+    marginTop: -95,
+    height: 25,
     margin: 0,
     backgroundColor: '#4287f5',
+    borderRadius: 7
   },
-  xpamount: {
-    textAlign: 'center',
-    fontSize: 17,
+  headerLevelDetails: {
     marginTop: 5,
     width: '100%',
+    textAlign: 'center',
+    alignItems: 'center'
+  },
+  level: {
+    fontSize: 14,
+  },
+  xpamount: {
+    fontSize: 15,
+    marginTop: 5,
   },
   bodyView: {
     width: '100%',
