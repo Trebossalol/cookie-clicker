@@ -1,4 +1,4 @@
-export type WorldDataID = '46afa2df-38e0-4c10-a483-9a5de43554de' | 'f971f3c2-5a44-4cca-8b8d-513b2a6302a9'
+export type WorldDataID = '46afa2df-38e0-4c10-a483-9a5de43554de' | 'f971f3c2-5a44-4cca-8b8d-513b2a6302a9' | '5e0fceda-0750-44f8-94ea-a7e83d52fec4'
 
 export interface CookieData {
     current: number

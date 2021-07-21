@@ -1,61 +1,13 @@
 import * as React from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage'
 import { CachedItemList, CpsData, ItemDynamicProps, WorldDataID } from './types'
 import getStorable from '../util/getStorable';
-import { Alert, ToastAndroid } from 'react-native';
 import { useSetUpdatePending, useUpdatePending } from '../context/UpdateContext';
 import { useWorldData } from '../context/WorldContext';
 import IncomeManager from './items/Income_Manager'
+import { retrieve, store } from '../util/storage';
+import { GameDataRegistry } from './registry';
 
-export const store = async <T>(key: string, value: T): Promise<T> => {
-    return new Promise(async (resolve, reject) => {
-        try {
-            await AsyncStorage.setItem(key, JSON.stringify(value));
-            const now = await retrieve<T>(key)
-            resolve(now)
-        } catch (error) {
-            reject(error)
-        }
-    })
-};
-
-export const remove = async (key: string,): Promise<void> => {
-    return new Promise(async (resolve, reject) => {
-        try {
-            await AsyncStorage.removeItem(key)
-            resolve()
-        } catch (error) {
-            reject(error)
-        }
-    })
-};
-
-export const retrieve = async <T>(key: string, ifNullValue: any = null): Promise<T> => {
-    return new Promise(async (resolve, reject) => {
-        try {
-            const value = await AsyncStorage.getItem(key)
-            if (!value) {
-                store(key, ifNullValue)
-                return ifNullValue
-            }
-            const parsed = JSON.parse(value);
-            resolve(parsed)
-        } catch (error) {
-            reject(error)
-        }
-    })
-};
-
-export const GameDataRegistry = {
-    cookies: (wid: WorldDataID) => `${wid}_GAME_COOKIES_AMOUNT`,
-    cachedItems: (wid: WorldDataID) =>`${wid}_GAME_CACHED_ITEMS`,
-    totalCookies: (wid: WorldDataID) => `${wid}_GAME_COOKIES_TOTAL`,
-    globalMultiplicator: (wid: WorldDataID) => `${wid}_GAME_COOKIE_MULTIPLICATOR`,
-    reachedWorld: `GAME_REACHED_WORLD`,
-    levelDetails: `GAME_CACHED_LEVEL-DT`
-}
-
-export interface useGameDataHookReturnValue {
+export interface UseGameDataHookReturnValue {
     cookies: number
     totalCookies: number
     cachedItems: CachedItemList
@@ -64,7 +16,7 @@ export interface useGameDataHookReturnValue {
     sync: () => Promise<void>
 }
 
-export function useGameData(): useGameDataHookReturnValue {
+export function useGameData(): UseGameDataHookReturnValue {
 
     const setUpdatePending = useSetUpdatePending()
     const updatePending = useUpdatePending()

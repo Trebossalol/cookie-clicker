@@ -3,7 +3,6 @@ import { StyleSheet, FlatList, RefreshControl, TouchableHighlight, ToastAndroid,
 import { MonoText } from '../components/StyledText';
 import { View, Text } from '../components/Themed';
 import { ItemList, Item, CachedItemList, CachedItem, CookieData, WorldData, LevelDetails } from '../game/types'
-import { retrieve, GameDataRegistry, store } from '../game/game'
 import TabBarIcon from '../constants/TabBarIcon'
 import Seperator from '../components/Seperator';
 import useLoadingSpinner from '../hooks/useLoadingSpinner';
@@ -14,6 +13,8 @@ import getBoxShadow from '../util/getBoxShadow';
 import WorldRegister from '../game/worlds/index'
 import { useWorldData } from '../context/WorldContext';
 import { ExtendedLevelDetails, useLevelDetails } from '../context/LevelContext';
+import { store } from '../util/storage';
+import { GameDataRegistry } from '../game/registry';
 
 type Callbackfn = (levelDetails: LevelDetails) => LevelDetails
 type UpdateLevelDetailsFn = (cb: Callbackfn) => Promise<void>

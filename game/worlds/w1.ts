@@ -9,7 +9,7 @@ import IncomeManager from '../items/Income_Manager';
 import { WorldData } from '../types'
 
 const W1: WorldData = {
-    name: 'Kleinstadt',
+    name: 'Stadt',
     id: '46afa2df-38e0-4c10-a483-9a5de43554de',
     multiplicator: 1,
     items: [

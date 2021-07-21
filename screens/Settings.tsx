@@ -3,8 +3,9 @@ import { StyleSheet, Image, ScrollView, RefreshControl, View as ReactNativeView,
 import { TouchableWithoutFeedback, TouchableHighlight } from 'react-native-gesture-handler';
 import { MonoText } from '../components/StyledText';
 import { useWorldData } from '../context/WorldContext';
-import { GameDataRegistry, remove, store } from '../game/game';
+import { GameDataRegistry } from '../game/registry';
 import getBoxShadow from '../util/getBoxShadow';
+import { remove, store } from '../util/storage';
 
 type CallbackFn = () => void
 

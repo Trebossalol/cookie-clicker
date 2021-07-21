@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { GameDataRegistry, retrieve, store } from '../game/game';
+import { GameDataRegistry } from '../game/registry';
 import { WorldDataID, WorldData } from '../game/types';
 import WorldRegister from '../game/worlds/index'
+import { retrieve, store } from '../util/storage';
 
 const DEFAULT_WORLD: WorldDataID = '46afa2df-38e0-4c10-a483-9a5de43554de'
 const DEFAULT_TERM = { id: DEFAULT_WORLD, items: [], setWid: () => Promise.resolve(), name: '', multiplicator: 1 }

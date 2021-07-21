@@ -13,11 +13,11 @@ const item: Item = {
     },
     calcNextPrice: ({ cache, cachedItems }) => {
         const cookieFactory = cachedItems.find(e => e.id === CookieFactory.id)
-        let price = ((cache?.level || 1) * 10000)
+        let price = Math.pow((cache?.level || 1) * 55, 1.5)
         if ((cookieFactory?.level || 1) >= 25) price *= .7
         return price
     },
-    onTick: ({ cache }) => Math.pow((cache?.level || 1) * 300, 1.35),
+    onTick: ({ cache }) => (cache?.level || 1) * 8,
     multiplicator: () => {
         const randNum = getRandNumber(1, 100)
         if (randNum > 80) return getRandNumber(2, 3)

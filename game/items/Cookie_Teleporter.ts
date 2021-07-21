@@ -16,11 +16,11 @@ const item: Item = {
         let income = 0
 
         if (randNum >= 93) {
-            income += ((cache?.level || 1) / 2) * getRandNumber(1200, 2000)
+            income += ((cache?.level || 1) / 2) * getRandNumber(100, 600)
         } else if (randNum >= 65) {
-            income += ((cache?.level || 1) / 2) * getRandNumber(600, 1000)
+            income += ((cache?.level || 1) / 2) * getRandNumber(70, 100)
         } else if (randNum >= 50) {
-            income += ((cache?.level || 1) / 2) * getRandNumber(200, 500)
+            income += ((cache?.level || 1) / 2) * getRandNumber(50, 80)
         } else {
             income += ((cache?.level || 1) / 2) * 10
         }

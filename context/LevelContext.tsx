@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { GameDataRegistry, retrieve, store } from '../game/game';
+import { GameDataRegistry } from '../game/registry';
 import { WorldDataID, WorldData, LevelDetails } from '../game/types';
 import WorldRegister from '../game/worlds/index'
+import { retrieve, store } from '../util/storage';
 
 const DEFAULT: ExtendedLevelDetails = {
     level: 0,
