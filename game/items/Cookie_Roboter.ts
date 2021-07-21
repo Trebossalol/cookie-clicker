@@ -13,12 +13,12 @@ const item: Item = {
     },
     calcNextPrice: ({ cache }) => {
         const lvl = (cache?.level || 1) + 2
-        const raised = Math.pow(lvl, 3)
-        return lvl * raised * 13000
+        const raised = Math.pow(lvl, 2)
+        return lvl * raised * 19000
     },
     onTick: ({ cache }) => {
         let amount = (cache?.level || 1) * 1200
-        amount *= indicator / 2 
+        amount += (indicator / 3) * (amount / 4) * 0.1792
         indicator++
         return amount
     }

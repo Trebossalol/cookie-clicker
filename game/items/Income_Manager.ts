@@ -9,7 +9,7 @@ const item: Item = {
         value: 0.0025
     },
     unlocked: () => true,
-    calcNextPrice: ({ cache }) => Math.pow((cache?.level || 1) * 25, 2),
+    calcNextPrice: ({ cache }) => Math.pow((cache?.level || 1) * 25, 1.25),
     onTick: () => 0
 }
 

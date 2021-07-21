@@ -114,15 +114,15 @@ export function useGameData(): useGameDataHookReturnValue {
 
         // Income manager multiplicator
         const incomeManagerLevel = cachedItems.find(e => e.id === IncomeManager.id)?.level
-        if (incomeManagerLevel !== undefined) multiplicators.push(1 + ( incomeManagerLevel * (IncomeManager.co_efficient?.value || 0.0025)))
-        
+        if (incomeManagerLevel != undefined) multiplicators.push(1 + ( incomeManagerLevel * (IncomeManager.co_efficient?.value || 0.0025)))
+
         // Calculate the final amount
         const earned = multiplicators
             .reduce((pv, cv) => pv * cv, amount)
 
         addToTotalCookie(earned)
         setCookies(e => e + earned)
-    }, [worldData])
+    }, [worldData, cachedItems])
 
     /**
      * @description This function renders on each game-render-iteration
@@ -141,9 +141,10 @@ export function useGameData(): useGameDataHookReturnValue {
                 },
                 worldData
             }
-            const earned = item.onTick(props)
-            const multiplicatorExists = item.multiplicator
-            const multiplicator = multiplicatorExists ? [multiplicatorExists(props)] : undefined
+            const onTick = item?.onTick
+            const earned = onTick == null ? 0 : onTick(props)
+            const getMultiplicator = item.multiplicator
+            const multiplicator = getMultiplicator == null ? []: [getMultiplicator(props)]
 
             addCookies(earned, multiplicator)
         })

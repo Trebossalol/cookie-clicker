@@ -3,7 +3,7 @@ import getRandNumber from '../../util/getRandNumber'
 
 const item: Item = {
     name: 'Cookie Teleporter',
-    description: 'This will teleport cookies to your account, the amount is random',
+    description: 'This item will teleport random amounts of cookies into your account.',
     id: '9174968b-b68c-4098-861c-adc05b8e1a09',
     unlocked: ({ cookieData }) => cookieData.total > 3000000,
     calcNextPrice: ({ cache }) => {
@@ -13,16 +13,16 @@ const item: Item = {
     },
     onTick: ({ cache }) => {
         const randNum = getRandNumber(1, 100)
-        let income = ((cache?.level || 1) / 2) * 10
+        let income = 0
 
-        if (randNum > 90) {
-            income += ((cache?.level || 1) / 2) * getRandNumber(1800, 2200)
-        } else if (randNum > 65) {
-            income += ((cache?.level || 1) / 2) * getRandNumber(800, 200)
-        } else if (randNum > 30) {
-            income += ((cache?.level || 1) / 2) * getRandNumber(500, 50)
+        if (randNum >= 93) {
+            income += ((cache?.level || 1) / 2) * getRandNumber(1200, 2000)
+        } else if (randNum >= 65) {
+            income += ((cache?.level || 1) / 2) * getRandNumber(600, 1000)
+        } else if (randNum >= 50) {
+            income += ((cache?.level || 1) / 2) * getRandNumber(200, 500)
         } else {
-            income += ((cache?.level || 1) / 2) * 30
+            income += ((cache?.level || 1) / 2) * 10
         }
         return income
     }

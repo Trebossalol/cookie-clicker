@@ -14,12 +14,12 @@ const W1: WorldData = {
     multiplicator: 1,
     items: [
         Finger,
+        IncomeManager,
         CookieStore,
         CookieFactory,
         CookieMultiplier,
         CookieTeleporter,
-        CookieRoboter,
-        IncomeManager
+        CookieRoboter
     ]
 }
 

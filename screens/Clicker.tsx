@@ -8,6 +8,7 @@ import { useWorldData } from '../context/WorldContext';
 import { useGameData } from '../game/game';
 import Finger from '../game/items/Finger';
 import getBoxShadow from '../util/getBoxShadow';
+import getRandNumber from '../util/getRandNumber';
 
 export function fromNum(number: number): string {
   const isK = number > 999
@@ -40,14 +41,14 @@ export default (props: ClickerProps) => {
 
       let randNum = Math.random() * (100 - 1) + 1
 
-      if      (randNum > 95) setRandomMultiplicator(5)
-      else if (randNum > 80) setRandomMultiplicator(4)
+      if      (randNum > getRandNumber(90, 95)) setRandomMultiplicator(5)
+      else if (randNum > getRandNumber(75, 85)) setRandomMultiplicator(4)
       else if (randNum > 60) setRandomMultiplicator(3)
       else setRandomMultiplicator(2)
 
-      setTimeout(() => setRandomMultiplicator(1), 15000)
+      setTimeout(() => setRandomMultiplicator(1), getRandNumber(12000, 25000))
 
-    }, 30000)
+    }, getRandNumber(30000, 50000))
 
     return () => clearInterval(interval)
   }, [])
@@ -59,9 +60,10 @@ export default (props: ClickerProps) => {
     addCookie(amount)
   }
 
-  async function addCookie(amount: number, ) {
+  const addCookie = React.useCallback((amount: number, ) => {
+    levelDetails.addXp(1)
     game.addCookies(amount, [randomMultiplicator])
-  }
+  }, [randomMultiplicator])
 
   function navigateTo(location: string, params?: object): void {
     props.navigation.navigate(location, params)
@@ -80,7 +82,7 @@ export default (props: ClickerProps) => {
           <ReactNativeView style={styles.headerView}>
             <ReactNativeView style={{
               ...styles.levelBar,
-              width: `${levelDetails.xpRelation < 20 ? 20 : levelDetails.xpRelation}%`
+              width: `${levelDetails.xpRelation < 16 ? 16 : levelDetails.xpRelation}%`
             }}>
               <MonoText style={styles.xpamount}>
                 {levelDetails.xp}/{levelDetails.xpRequired} XP
@@ -104,7 +106,7 @@ export default (props: ClickerProps) => {
 
               <MonoText style={{ fontSize: 33, height: 50, width: 300, textAlign: 'center' }}>{game.cookies.toString().split('.')[0]}</MonoText>
               <MonoText style={{ fontSize: 15, height: 50, width: 300, textAlign: 'center' }}>Dezimal: {game.cookies.toFixed(6).split('.')[1]}</MonoText>
-              <MonoText style={{ textAlign: 'center', fontSize: 25 }}>x{randomMultiplicator}</MonoText>
+              <MonoText style={{ textAlign: 'center', fontSize: 25 }}>x{randomMultiplicator} </MonoText>
 
             </View>
           
@@ -141,17 +143,21 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: '100%',
     flexDirection: 'row',
-    height: 100,
+    height: 5,
     top: 0,
+    justifyContent: 'center', 
+    alignItems: 'center',
   },
   levelBar: {
-    height: 3,
-    backgroundColor: '#4287f5'
+    height: 5,
+    margin: 0,
+    backgroundColor: '#4287f5',
   },
   xpamount: {
     textAlign: 'center',
     fontSize: 17,
-    margin: 5
+    marginTop: 5,
+    width: '100%',
   },
   bodyView: {
     width: '100%',

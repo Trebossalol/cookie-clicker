@@ -120,7 +120,7 @@ function ItemRenderer({ index, item, cachedItems, cookieData, expandedIndex, set
       ...item
     }
   }, [cachedItems, item])
-  const price = React.useMemo(() => item?.calcNextPrice({ cachedItems, cookieData, cache, worldData }), [item, cachedItems, cookieData, cache])
+  const price = React.useMemo(() => Math.round(item?.calcNextPrice({ cachedItems, cookieData, cache, worldData })), [item, cachedItems, cookieData, cache])
   const itemUnlocked = React.useMemo(() => (item?.unlocked({ cachedItems, cookieData, cache, worldData })) && ((cache?.maxLvl || 50) > (cache?.maxLvl ? cache?.level : -1)), [cachedItems, cookieData, cache])
   const itemName = React.useMemo(() => 
     !cache ? 

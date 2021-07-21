@@ -31,7 +31,7 @@ export interface Item {
     }
     unlocked: (data: ItemDynamicProps) => boolean
     calcNextPrice: (data: ItemDynamicProps) => number
-    onTick: (data: ItemDynamicProps) => number
+    onTick?: (data: ItemDynamicProps) => number
     multiplicator?: (data: ItemDynamicProps) => number
 }
 

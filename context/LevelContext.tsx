@@ -48,6 +48,7 @@ export function LevelProvider(props: any) {
     }
 
     async function addXp(amount: number = 1): Promise<void> {
+        console.log('adding xp ', amount)
         setXp(xp + amount)
         cacheLevelData()
     }
@@ -57,13 +58,15 @@ export function LevelProvider(props: any) {
     }
 
     async function updateStates(): Promise<void> {
+        console.log('in updateStates')
         const fetched = await retrieve<LevelDetails>(GameDataRegistry.levelDetails, DEFAULT)
+        console.log(fetched)
         setXp(fetched.xp)
         setLevel(fetched.level)
     }
 
     return (
-        <LevelContext.Provider value={details}>
+        <LevelContext.Provider value={{ xp, level, xpRelation, xpRequired, addXp }}>
             {props.children}
         </LevelContext.Provider>
     )
