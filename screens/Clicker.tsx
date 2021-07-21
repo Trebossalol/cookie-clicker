@@ -10,19 +10,6 @@ import Finger from '../game/items/Finger';
 import getBoxShadow from '../util/getBoxShadow';
 import getRandNumber from '../util/getRandNumber';
 
-export function fromNum(number: number): string {
-  const isK = number > 999
-  const isMill = number > 999999
-  const isMillia = number > 999999999
-
-
-  return isMillia ? 
-    `${(number/1000000000).toFixed(3)} Billion.` : isMill ? 
-    `${(number/1000000).toFixed(3)} Mio.` : isK ? 
-    `${(number/1000).toFixed(3)} K` : `${number.toString()}`
-
-}
-
 interface ClickerProps {
   navigation: any
 }
@@ -58,7 +45,7 @@ export default (props: ClickerProps) => {
     const fingerLevel = (game.cachedItems.find(e => e.id === Finger.id) || {}).level
     if (fingerLevel != undefined) amount += fingerLevel
     addCookie(amount)
-    levelDetails.addXp(1 * randomMultiplicator)
+    levelDetails.addXp(getRandNumber(1, 2.5) * randomMultiplicator)
   }
 
   const addCookie = React.useCallback((amount: number, ) => {

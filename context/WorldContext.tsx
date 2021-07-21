@@ -5,7 +5,13 @@ import WorldRegister from '../game/worlds/index'
 import { retrieve, store } from '../util/storage';
 
 const DEFAULT_WORLD: WorldDataID = '46afa2df-38e0-4c10-a483-9a5de43554de'
-const DEFAULT_TERM = { id: DEFAULT_WORLD, items: [], setWid: () => Promise.resolve(), name: '', multiplicator: 1 }
+const DEFAULT_TERM: ExtendedWorldData = { 
+    id: DEFAULT_WORLD,
+    items: [], 
+    setWid: () => Promise.resolve(), 
+    name: '', 
+    multiplicator: 1 
+}
 
 export interface ExtendedWorldData extends WorldData {
     setWid: (wid: WorldDataID) => Promise<void>

@@ -1,10 +1,9 @@
 import * as React from 'react';
-import { StyleSheet, Image, ScrollView, RefreshControl, View as ReactNativeView, Button, ToastAndroid, Alert } from 'react-native';
-import { TouchableWithoutFeedback, TouchableHighlight } from 'react-native-gesture-handler';
-import { MonoText } from '../components/StyledText';
+import { StyleSheet, ScrollView, Button, ToastAndroid, Alert } from 'react-native';
+import { TouchableHighlight } from 'react-native-gesture-handler';
 import { useWorldData } from '../context/WorldContext';
+import { useGameData } from '../game/game';
 import { GameDataRegistry } from '../game/registry';
-import getBoxShadow from '../util/getBoxShadow';
 import { remove, store } from '../util/storage';
 
 type CallbackFn = () => void
@@ -12,6 +11,7 @@ type CallbackFn = () => void
 export default (props: any) => {
 
     const worldData = useWorldData()
+    const game = useGameData()
 
     async function reset() {
         const values = Object.values(GameDataRegistry)
@@ -22,12 +22,7 @@ export default (props: any) => {
             console.log('removing ', key)
             await remove(key)                
         })
-        ToastAndroid.show('Erfolg!', ToastAndroid.SHORT)
-    }
-
-    async function add100mio() {
-        store(GameDataRegistry.cookies(worldData.id), 100000000)
-        store(GameDataRegistry.totalCookies(worldData.id), 100000000)
+        await game.sync()
         ToastAndroid.show('Erfolg!', ToastAndroid.SHORT)
     }
 
@@ -41,10 +36,7 @@ export default (props: any) => {
     return (
         <ScrollView>
             <TouchableHighlight>
-                <Button title='Reset' color='red' onPress={() => alert('Bist du sicher, dass du deine Daten zurücksetzen willst ?', reset)}/>
-            </TouchableHighlight>
-            <TouchableHighlight>
-                <Button title='Cheat' color='blue' onPress={() => alert('Willst du 100 Mio. Cookies haben?', add100mio)}/>
+                <Button title='RESET' color='red' onPress={() => alert('Are you sure you want to reset your userdata ?', reset)}/>
             </TouchableHighlight>
         </ScrollView>
     );

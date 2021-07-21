@@ -1,15 +1,15 @@
 import * as React from 'react';
 
-type RV = React.Dispatch<React.SetStateAction<boolean>>
+type DispatchUpdateStatus = React.Dispatch<React.SetStateAction<boolean>>
 
-const UpdatePending = React.createContext(false)
-const SetUpdatePending = React.createContext<RV>(() => false)
+const UpdatePending = React.createContext<boolean>(false)
+const SetUpdatePending = React.createContext<DispatchUpdateStatus>(() => false)
 
 export function useUpdatePending(): boolean {
     return React.useContext(UpdatePending)
 }
 
-export function useSetUpdatePending(): RV {
+export function useSetUpdatePending(): DispatchUpdateStatus {
     return React.useContext(SetUpdatePending)
 }
 

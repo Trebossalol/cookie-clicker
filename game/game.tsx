@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { CachedItemList, CpsData, ItemDynamicProps, WorldDataID } from './types'
+import { CachedItemList, CpsData, ItemDynamicProps } from './types'
 import getStorable from '../util/getStorable';
 import { useSetUpdatePending, useUpdatePending } from '../context/UpdateContext';
 import { useWorldData } from '../context/WorldContext';
@@ -7,7 +7,6 @@ import IncomeManager from './items/Income_Manager'
 import { retrieve, store } from '../util/storage';
 import { GameDataRegistry } from './registry';
 import { useLevelDetails } from '../context/LevelContext';
-import getRandNumber from '../util/getRandNumber';
 import { ToastAndroid } from 'react-native';
 
 
@@ -55,7 +54,7 @@ export function GameProvider(props: GameProviderProps) {
     React.useEffect(() => {
         loadGameData()
         levelDetails.bindCallback(callbackEventName, 'LEVEL_UP', ({ level }) => {
-            const amount = Math.pow(level + 1, 2) * 25
+            const amount = Math.round(Math.pow(level + 1, 2) * 19)
             addCookies(amount)
             ToastAndroid.show(`Du hast ${amount} Cookies erhalten!`, ToastAndroid.SHORT)
         })
@@ -98,7 +97,7 @@ export function GameProvider(props: GameProviderProps) {
 
         // Income manager multiplicator
         const incomeManagerLevel = cachedItems.find(e => e.id === IncomeManager.id)?.level
-        if (incomeManagerLevel != undefined) multiplicators.push(1 + ( incomeManagerLevel * (IncomeManager.co_efficient?.value || 0.0025)))
+        if (incomeManagerLevel != undefined) multiplicators.push(1 + (incomeManagerLevel * (IncomeManager.co_efficient?.value || 0.0025)))
 
         // Calculate the final amount
         const earned = multiplicators
@@ -128,6 +127,7 @@ export function GameProvider(props: GameProviderProps) {
             }
             const onTick = item?.onTick
             const earned = onTick == null ? 0 : onTick(props)
+            
             const getMultiplicator = item.multiplicator
             const multiplicator = getMultiplicator == null ? []: [getMultiplicator(props)]
 

@@ -1,9 +1,7 @@
 import * as React from 'react';
 import { ToastAndroid } from 'react-native';
-import { useGameData } from '../game/game';
 import { GameDataRegistry } from '../game/registry';
-import { WorldDataID, WorldData, LevelDetails } from '../game/types';
-import WorldRegister from '../game/worlds/index'
+import { LevelDetails } from '../game/types';
 import { retrieve, store } from '../util/storage';
 
 const DEFAULT: ExtendedLevelDetails = {
@@ -16,21 +14,21 @@ const DEFAULT: ExtendedLevelDetails = {
     unbindCallback: () => {}
 }
 
-export type LevelContextEventName = 'LEVEL_UP' 
-export type BindCallbackCb = ({ level }: { level: number }) => void
-export type LevelContextBindCallbackFn = (uniqeId: string, event: LevelContextEventName, callback: BindCallbackCb) => void
+export type EventName = 'LEVEL_UP' 
+export type BindCallbackProps = { level: number }
+export type BindCallbackParamCb = (props: BindCallbackProps) => void
+export type BindEventCallback = (uniqeId: string, event: EventName, callback: BindCallbackParamCb) => void
 export interface CallbackState {
     id: string
-    event: LevelContextEventName
-    callback: BindCallbackCb
+    event: EventName
+    callback: BindCallbackParamCb
 }
-export type CallbacksStateList = CallbackState[]
 
 export interface ExtendedLevelDetails extends LevelDetails {
     xpRequired: number
     xpRelation: number
     addXp: (amount?: number) => Promise<void>
-    bindCallback: LevelContextBindCallbackFn
+    bindCallback: BindEventCallback
     unbindCallback: (uniqeId: string) => void
 }
 
@@ -46,7 +44,7 @@ export function LevelProvider(props: any) {
 
     const [xp, setXp] = React.useState<number>(1)
     const [level, setLevel] = React.useState<number>(1)
-    const [callbacks, setCallbacks] = React.useState<CallbacksStateList>([])
+    const [callbacks, setCallbacks] = React.useState<CallbackState[]>([])
 
     const xpRequired = React.useMemo(() => Math.pow(level + 2, 3), [level])
     const xpRelation = React.useMemo(() => xp / xpRequired, [xp, xpRequired])
@@ -86,7 +84,7 @@ export function LevelProvider(props: any) {
         setLevel(fetched.level)
     }
 
-    function bindCallback(uniqeId: string, event: LevelContextEventName, callback: BindCallbackCb) {
+    function bindCallback(uniqeId: string, event: EventName, callback: BindCallbackParamCb) {
         setCallbacks(list => [...list, {
             callback, 
             event,

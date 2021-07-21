@@ -7,7 +7,6 @@ import TabBarIcon from '../constants/TabBarIcon'
 import Seperator from '../components/Seperator';
 import useLoadingSpinner from '../hooks/useLoadingSpinner';
 import getStorable from '../util/getStorable';
-import { fromNum } from './Clicker'
 import { useSetUpdatePending } from '../context/UpdateContext';
 import getBoxShadow from '../util/getBoxShadow';
 import WorldRegister from '../game/worlds/index'
@@ -15,9 +14,8 @@ import { useWorldData } from '../context/WorldContext';
 import { ExtendedLevelDetails, useLevelDetails } from '../context/LevelContext';
 import { store } from '../util/storage';
 import { GameDataRegistry } from '../game/registry';
-
-type Callbackfn = (levelDetails: LevelDetails) => LevelDetails
-type UpdateLevelDetailsFn = (cb: Callbackfn) => Promise<void>
+import { fromNum } from '../util/fromNum';
+import getRandNumber from '../util/getRandNumber';
 
 export default () => {
 
@@ -161,7 +159,8 @@ function ItemRenderer({ index, item, cachedItems, cookieData, expandedIndex, set
         itemPrice: price, 
         type: cache === undefined ? 'buy' : 'upgrade' 
       }
-    })
+    }); 
+    else levelDetails.addXp(getRandNumber(1, 5))
 
     await store(GameDataRegistry.cookies(worldData.id), cookieData.current - price)
 
