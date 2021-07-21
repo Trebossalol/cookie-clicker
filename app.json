@@ -2,7 +2,7 @@
   "expo": {
     "name": "cookie-clicker",
     "slug": "cookie-clicker",
-    "version": "0.3b",
+    "version": "0.2.1b",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
