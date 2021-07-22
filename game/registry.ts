@@ -6,5 +6,6 @@ export const GameDataRegistry = {
     totalCookies: (wid: WorldDataID) => `${wid}_GAME_COOKIES_TOTAL`,
     globalMultiplicator: (wid: WorldDataID) => `${wid}_GAME_COOKIE_MULTIPLICATOR`,
     reachedWorld: `GAME_REACHED_WORLD`,
-    levelDetails: `GAME_CACHED_LEVEL-DT`
+    levelDetails: `GAME_CACHED_LEVEL-DT`,
+    uiSettings: `APP_UI_SETTINGS`
 }

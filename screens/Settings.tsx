@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { StyleSheet, ScrollView, Button, ToastAndroid, Alert } from 'react-native';
 import { TouchableHighlight } from 'react-native-gesture-handler';
+import Checkbox from '../components/Checkbox';
+import { useUISettings } from '../context/UiSettingsContext';
 import { useWorldData } from '../context/WorldContext';
 import { useGameData } from '../game/game';
 import { GameDataRegistry } from '../game/registry';
@@ -12,6 +14,7 @@ export default (props: any) => {
 
     const worldData = useWorldData()
     const game = useGameData()
+    const uiSettings = useUISettings()
 
     async function reset() {
         const values = Object.values(GameDataRegistry)
@@ -38,6 +41,11 @@ export default (props: any) => {
             <TouchableHighlight>
                 <Button title='RESET' color='red' onPress={() => alert('Are you sure you want to reset your userdata ?', reset)}/>
             </TouchableHighlight>
+            <Checkbox
+                defaultValue={uiSettings.clicker.show_decimal}
+                onChange={(checked) => uiSettings.edit(e => ({ ...e, clicker: { ...e.clicker, show_decimal: checked } }))}
+                title={checked => checked ? 'Dezimalstellen ausblenden' : 'Dezimalstellen anzeigen'}
+            />
         </ScrollView>
     );
 }

@@ -10,6 +10,7 @@ import { UpdatePendingProvider as UpdateProvider } from './context/UpdateContext
 import { WorldProvider } from './context/WorldContext';
 import { LevelProvider } from './context/LevelContext';
 import { GameProvider } from './game/game';
+import { UiSettingsProvider } from './context/UiSettingsContext';
 
 export default function App() {
   const isLoadingComplete = useCachedResources();
@@ -21,19 +22,21 @@ export default function App() {
     return (
       <SafeAreaProvider>
 
-        <UpdateProvider>
-          <WorldProvider>
-            <LevelProvider>
-              <GameProvider>
+        <UiSettingsProvider>
+          <UpdateProvider>
+            <WorldProvider>
+              <LevelProvider>
+                <GameProvider>
+                  
+                  <Navigation colorScheme={colorScheme} />
+                  <StatusBar />
 
-                <Navigation colorScheme={colorScheme} />
-                <StatusBar />
+                </GameProvider>
+              </LevelProvider>
+            </WorldProvider>
+          </UpdateProvider>
+        </UiSettingsProvider>
 
-              </GameProvider>
-            </LevelProvider>
-          </WorldProvider>
-        </UpdateProvider>
-        
       </SafeAreaProvider>
     );
   }

@@ -10,6 +10,7 @@ import Finger from '../game/items/Finger';
 import getBoxShadow from '../util/getBoxShadow';
 import getRandNumber from '../util/getRandNumber';
 import AnimatedNumber from 'react-native-animated-number'
+import { useUISettings } from '../context/UiSettingsContext';
 
 interface ClickerProps {
   navigation: any
@@ -23,6 +24,7 @@ export default (props: ClickerProps) => {
   const game = useGameData()
   const worldData = useWorldData()
   const levelDetails = useLevelDetails()
+  const uiSettings = useUISettings()
 
   React.useEffect(() => {
     let interval = setInterval(() => {
@@ -112,10 +114,10 @@ export default (props: ClickerProps) => {
                 style={{ fontFamily: 'space-mono', fontSize: 27, color: 'black', width: '100%', height: 50, textAlign: 'center' }}
                 value={Math.round(game.cookies)}
               />
-              <AnimatedNumber 
+              {uiSettings.clicker.show_decimal && <AnimatedNumber 
                 style={{ fontFamily: 'space-mono', fontSize: 18, color: 'black', width: '100%', height: 50, textAlign: 'center' }}
                 value={game.cookies % 1 * 100000}
-              />
+              />}
               <AnimatedNumber 
                 style={{ fontFamily: 'space-mono', fontSize: 25, color: 'black', width: '100%', height: 50, textAlign: 'center' }}
                 value={randomMultiplicator}
