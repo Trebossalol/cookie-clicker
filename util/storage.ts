@@ -29,7 +29,7 @@ export const retrieve = async <T>(key: string, ifNullValue: any = null): Promise
             const value = await AsyncStorage.getItem(key)
             if (!value) {
                 store(key, ifNullValue)
-                return ifNullValue
+                return resolve(ifNullValue)
             }
             const parsed = JSON.parse(value);
             resolve(parsed)

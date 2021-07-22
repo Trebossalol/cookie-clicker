@@ -6,7 +6,7 @@ const item: Item = {
     id: 'cd9342b1-1239-4514-aca7-a7d0100c4e58',
     maxLvl: 200,
     unlocked: () => true,
-    calcNextPrice: ({ cache }) => Math.pow((cache?.level || 1) * 33, 1.5)
+    calcNextPrice: ({ cache }) => Math.pow((cache?.level || 1) * 33, 1.2)
 }
 
 export default item

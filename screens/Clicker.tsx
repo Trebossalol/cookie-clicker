@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, Image, ScrollView, RefreshControl, View as ReactNativeView } from 'react-native';
+import { StyleSheet, Image, ScrollView, RefreshControl, View as ReactNativeView, Button } from 'react-native';
 import { TouchableWithoutFeedback, TouchableHighlight } from 'react-native-gesture-handler';
 import { MonoText } from '../components/StyledText';
 import { Text, View } from '../components/Themed';
@@ -9,6 +9,7 @@ import { useGameData } from '../game/game';
 import Finger from '../game/items/Finger';
 import getBoxShadow from '../util/getBoxShadow';
 import getRandNumber from '../util/getRandNumber';
+import AnimatedNumber from 'react-native-animated-number'
 
 interface ClickerProps {
   navigation: any
@@ -35,7 +36,7 @@ export default (props: ClickerProps) => {
 
       setTimeout(() => setRandomMultiplicator(1), getRandNumber(8000, 20000))
 
-    }, getRandNumber(40000, 70000))
+    }, getRandNumber(40000, 50000))
 
     return () => clearInterval(interval)
   }, [])
@@ -45,10 +46,9 @@ export default (props: ClickerProps) => {
     const fingerLevel = (game.cachedItems.find(e => e.id === Finger.id) || {}).level
     if (fingerLevel != undefined) amount += fingerLevel
     addCookie(amount)
-    levelDetails.addXp(Math.round(getRandNumber(1, 2.5) * randomMultiplicator))
   }
 
-  const addCookie = React.useCallback((amount: number, ) => {
+  const addCookie = React.useCallback((amount: number) => {
     game.addCookies(amount, [randomMultiplicator])
   }, [randomMultiplicator])
 
@@ -75,9 +75,18 @@ export default (props: ClickerProps) => {
             </ReactNativeView>
 
             <ReactNativeView style={styles.headerLevelDetails}>
-              <MonoText style={styles.xpamount}>
-                {levelDetails.xp}/{levelDetails.xpRequired} XP
-              </MonoText>
+              <ReactNativeView style={styles.headerXpDetails}>
+                <AnimatedNumber 
+                  style={styles.xpPart}
+                  value={levelDetails.xp}
+                />
+                <MonoText style={styles.xpseperator}>/</MonoText>
+                <AnimatedNumber 
+                  style={styles.xpPart}
+                  value={levelDetails.xpRequired}
+                  formatter={n => ` ${n} XP`}
+                />
+              </ReactNativeView>
               <MonoText style={styles.level}>
                 Lvl: {levelDetails.level}
               </MonoText>
@@ -99,11 +108,21 @@ export default (props: ClickerProps) => {
                   />
               </TouchableWithoutFeedback>
 
-              <MonoText style={{ fontSize: 33, height: 50, width: 300, textAlign: 'center' }}>{game.cookies.toString().split('.')[0]}</MonoText>
-              <MonoText style={{ fontSize: 15, height: 50, width: 300, textAlign: 'center' }}>Dezimal: {game.cookies.toFixed(6).split('.')[1]}</MonoText>
-              <MonoText style={{ textAlign: 'center', fontSize: 25 }}>x{randomMultiplicator}</MonoText>
+              <AnimatedNumber 
+                style={{ fontFamily: 'space-mono', fontSize: 27, color: 'black', width: '100%', height: 50, textAlign: 'center' }}
+                value={Math.round(game.cookies)}
+              />
+              <AnimatedNumber 
+                style={{ fontFamily: 'space-mono', fontSize: 18, color: 'black', width: '100%', height: 50, textAlign: 'center' }}
+                value={game.cookies % 1 * 100000}
+              />
+              <AnimatedNumber 
+                style={{ fontFamily: 'space-mono', fontSize: 25, color: 'black', width: '100%', height: 50, textAlign: 'center' }}
+                value={randomMultiplicator}
+                formatter={n => `x${n}`}
+              />
               <MonoText>XP u. Cookies</MonoText>
-
+              
             </View>
           
           </ReactNativeView>
@@ -151,7 +170,7 @@ const styles = StyleSheet.create({
     marginTop: -95,
     height: 25,
     margin: 0,
-    backgroundColor: '#4287f5',
+    backgroundColor: '#0362fc',
     borderRadius: 7,
   },
   headerLevelDetails: {
@@ -160,12 +179,26 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     alignItems: 'center'
   },
+  headerXpDetails: {
+    flexDirection: 'row',
+    width: '50%',
+    justifyContent: 'space-around'
+  },
   level: {
     fontSize: 14,
   },
-  xpamount: {
+  xpPart: {
+    marginHorizontal: 2,
+    minWidth: '20%',
     fontSize: 15,
     marginTop: 5,
+    color: 'black',
+    textAlign: 'center',
+    fontFamily: 'space-mono'
+  },
+  xpseperator: {
+    marginTop: 5,
+    fontSize: 15
   },
   bodyView: {
     width: '100%',

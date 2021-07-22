@@ -5,7 +5,7 @@ import { LevelDetails } from '../game/types';
 import { retrieve, store } from '../util/storage';
 
 const DEFAULT: ExtendedLevelDetails = {
-    level: 0,
+    level: 1,
     xp: 0,
     xpRelation: 0,
     xpRequired: 0,
@@ -42,11 +42,11 @@ export type UpdateLevelDetailsCb = (levelDetails: LevelDetails) => LevelDetails
 
 export function LevelProvider(props: any) {
 
-    const [xp, setXp] = React.useState<number>(1)
-    const [level, setLevel] = React.useState<number>(1)
+    const [xp, setXp] = React.useState<number>(-1)
+    const [level, setLevel] = React.useState<number>(-1)
     const [callbacks, setCallbacks] = React.useState<CallbackState[]>([])
 
-    const xpRequired = React.useMemo(() => Math.round(Math.pow(level + 3, 3)), [level])
+    const xpRequired = React.useMemo(() => Math.round(Math.pow(level + 2, level < 10 ? 2.1 : 2.8)), [level])
     const xpRelation = React.useMemo(() => xp / xpRequired, [xp, xpRequired])
     const details = React.useMemo<ExtendedLevelDetails>(() => ({ level, xp, xpRequired, xpRelation, addXp, bindCallback, unbindCallback }), [xp, level, xpRequired, xpRelation])
     const levelDetails = React.useMemo<LevelDetails>(() => ({ xp, level }), [xp, level])
@@ -56,6 +56,7 @@ export function LevelProvider(props: any) {
     }, [])
 
     React.useEffect(() => {
+        if (xp < 0 || level < 0) return
         if (xp >= xpRequired) levelUp()
         cacheLevelData()
     }, [xp, level])

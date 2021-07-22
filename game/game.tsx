@@ -51,6 +51,7 @@ export function GameProvider(props: GameProviderProps) {
     const [cookies, setCookies] = React.useState(0)
     const [totalCookies, setTotalCookies] = React.useState<number>(0)
 
+
     React.useEffect(() => {
         loadGameData()
         levelDetails.bindCallback(callbackEventName, 'LEVEL_UP', ({ level }) => {
@@ -105,6 +106,7 @@ export function GameProvider(props: GameProviderProps) {
 
         addToTotalCookie(earned)
         setCookies(e => e + earned)
+        levelDetails.addXp(1)
     }, [worldData, cachedItems])
 
     /**
@@ -161,15 +163,19 @@ export function GameProvider(props: GameProviderProps) {
         await store(GameDataRegistry.cookies(worldData.id), cookies)
     }
 
-    return (
-        <GameContext.Provider value={{
-            cacheData,
+    const gameData = React.useCallback(() => {
+        return {
             cookies,
             totalCookies,
             cachedItems,
+            addCookies,
+            cacheData,
             sync: loadGameData,
-            addCookies
-        }}>
+        }
+    }, [cookies, totalCookies, cachedItems, addCookies, cacheData, loadGameData])
+
+    return (
+        <GameContext.Provider value={gameData()}>
             {props.children}
         </GameContext.Provider>
     )
