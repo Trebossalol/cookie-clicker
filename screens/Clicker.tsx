@@ -11,6 +11,7 @@ import getBoxShadow from '../util/getBoxShadow';
 import getRandNumber from '../util/getRandNumber';
 import AnimatedNumber from 'react-native-animated-number'
 import { useUISettings } from '../context/UiSettingsContext';
+import useGameEvent from '../hooks/useGameEvent';
 
 interface ClickerProps {
   navigation: any
@@ -25,7 +26,12 @@ export default (props: ClickerProps) => {
   const worldData = useWorldData()
   const levelDetails = useLevelDetails()
   const uiSettings = useUISettings()
-  
+  const Event = useGameEvent({ 
+    eventTitle: '+ 50% Cookies & XP', 
+    price: 10000, 
+    onSuccess: () => [1.5],
+    durationMs: 20000
+  })
 
   React.useEffect(() => {
     let interval = setInterval(() => {
@@ -52,8 +58,10 @@ export default (props: ClickerProps) => {
   }
 
   const addCookie = React.useCallback((amount: number) => {
-    game.addCookies(amount, [randomMultiplicator])
-  }, [randomMultiplicator])
+    const multiplicators = [randomMultiplicator]
+    if (Event.multiplicators) multiplicators.push(...Event.multiplicators)
+    game.addCookies(amount, multiplicators)
+  }, [randomMultiplicator, Event.multiplicators])
 
   function navigateTo(location: string, params?: object): void {
     props.navigation.navigate(location, params)
@@ -131,12 +139,7 @@ export default (props: ClickerProps) => {
           </ReactNativeView>
           
           <ReactNativeView style={styles.footerView}>
-            {/*<TouchableHighlight onPress={() => navigateTo('Worlds')}>
-              <Image 
-                source={require('../assets/images/world.png')}
-                style={styles.world}
-                />
-            </TouchableHighlight>*/}
+            <Event.Event />
           </ReactNativeView>
       </ScrollView>
   );
@@ -205,7 +208,7 @@ const styles = StyleSheet.create({
   },
   bodyView: {
     width: '100%',
-    height: '70%',
+    height: '63%',
     justifyContent: 'center', 
     alignItems: 'center',
     borderRadius: 15,
@@ -230,7 +233,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     height: 100,
     bottom: 0,
-    justifyContent: 'flex-end'
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   world: {
     resizeMode: 'stretch',

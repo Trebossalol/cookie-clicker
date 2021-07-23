@@ -3,7 +3,7 @@ import { ToastAndroid, TextStyle } from 'react-native';
 import { GameDataRegistry } from '../game/registry';
 import { retrieve, store } from '../util/storage';
 
-interface Settings {
+export interface UiSettings {
     clicker: {
         show_decimal: boolean
     },
@@ -16,7 +16,7 @@ interface Settings {
     }
 }
 
-const DEFAULT: ExtendedSettings = {
+const DEFAULT: ExtendedUiSettings = {
     clicker: {
         show_decimal: true
     },
@@ -30,30 +30,30 @@ const DEFAULT: ExtendedSettings = {
     edit: () => Promise.resolve()
 }
 
-interface ExtendedSettings extends Settings {
-    edit: (callback: (settings: Settings) => Settings) => void
+export interface ExtendedUiSettings extends UiSettings {
+    edit: (callback: (settings: UiSettings) => UiSettings) => void
 }
 
-const UiSettingsContext = React.createContext<ExtendedSettings>(DEFAULT)
+const UiSettingsContext = React.createContext<ExtendedUiSettings>(DEFAULT)
 
-export function useUISettings(): ExtendedSettings {
+export function useUISettings(): ExtendedUiSettings {
     return React.useContext(UiSettingsContext)
 }
 
 export function UiSettingsProvider(props: any) {
 
-    const [settings, setSettings] = React.useState<Settings>(DEFAULT)
+    const [settings, setSettings] = React.useState<UiSettings>(DEFAULT)
 
     React.useEffect(() => {
         updateStates()
     }, [])
 
     const cacheUiSettingsData = React.useCallback(async() => {
-        await store<Settings>(GameDataRegistry.uiSettings, settings)
+        await store<UiSettings>(GameDataRegistry.uiSettings, settings)
     }, [settings])
 
     async function updateStates(): Promise<void> {
-        const fetched = await retrieve<Settings>(GameDataRegistry.uiSettings, DEFAULT)
+        const fetched = await retrieve<UiSettings>(GameDataRegistry.uiSettings, DEFAULT)
         if (fetched?.api?.version !== DEFAULT.api.version) {
             ToastAndroid.show('Overwriting default settings because of changes', ToastAndroid.SHORT)
             await store(GameDataRegistry.uiSettings, DEFAULT)
@@ -63,8 +63,8 @@ export function UiSettingsProvider(props: any) {
         setSettings(fetched)
     }
 
-    const edit = React.useCallback(async(callback: (settings: Settings) => Settings) => {
-        const current = await retrieve<Settings>(GameDataRegistry.uiSettings, DEFAULT)
+    const edit = React.useCallback(async(callback: (settings: UiSettings) => UiSettings) => {
+        const current = await retrieve<UiSettings>(GameDataRegistry.uiSettings, DEFAULT)
         const toSet = callback(current)
         await store(GameDataRegistry.uiSettings, toSet)
         await updateStates()

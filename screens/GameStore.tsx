@@ -2,7 +2,7 @@ import * as React from 'react';
 import { StyleSheet, FlatList, RefreshControl, TouchableHighlight, ToastAndroid, Button, TouchableNativeFeedback, View as ReactNativeView } from 'react-native';
 import { MonoText } from '../components/StyledText';
 import { View, Text } from '../components/Themed';
-import { ItemList, Item, CachedItemList, CachedItem, CookieData, WorldData, LevelDetails } from '../game/types'
+import { ItemList, Item, CachedItemList, CachedItem, CookieData, WorldData } from '../game/types'
 import TabBarIcon from '../constants/TabBarIcon'
 import Seperator from '../components/Seperator';
 import useLoadingSpinner from '../hooks/useLoadingSpinner';
@@ -16,12 +16,14 @@ import { store } from '../util/storage';
 import { GameDataRegistry } from '../game/registry';
 import { fromNum } from '../util/fromNum';
 import getRandNumber from '../util/getRandNumber';
+import { useUISettings, ExtendedUiSettings } from '../context/UiSettingsContext';
 
 export default () => {
 
   const { Spinner, setLoading } = useLoadingSpinner()
   const worldData = useWorldData()
   const levelDetails = useLevelDetails()
+  const uiSettings = useUISettings()
 
   const [listData, setListData] = React.useState<ItemList>()
   const [cachedItems, setCachedItems] = React.useState<CachedItemList>([])
@@ -66,6 +68,7 @@ export default () => {
                                   expandedIndex={expandedIndex}
                                   worldData={worldData}
                                   levelDetails={levelDetails}
+                                  uiSettings={uiSettings}
                                   setExpandedIndex={setExpandedIndex}
                                   updateStates={updateStates}
                                   setLoading={setLoading}
@@ -99,13 +102,14 @@ interface ItemRendererProps {
   worldData: WorldData
   cookieData: CookieData
   expandedIndex: number|null
+  uiSettings: ExtendedUiSettings
   levelDetails: ExtendedLevelDetails
   setExpandedIndex: React.Dispatch<React.SetStateAction<number | null>>
   updateStates: () => Promise<void>
   setLoading: (state: boolean, delayMS?: number) => void
 }
 
-function ItemRenderer({ index, item, cachedItems, cookieData, expandedIndex, setExpandedIndex, updateStates, setLoading, levelDetails, worldData }: ItemRendererProps) {
+function ItemRenderer({ index, item, cachedItems, cookieData, expandedIndex, setExpandedIndex, updateStates, setLoading, levelDetails, worldData, uiSettings }: ItemRendererProps) {
 
   const setUpdatePending = useSetUpdatePending()
 
@@ -236,7 +240,7 @@ function ItemRenderer({ index, item, cachedItems, cookieData, expandedIndex, set
             {item?.requirements && (
               <>
                 <MonoText style={{ fontSize: 20 }}>Requirements:</MonoText>
-                <Text>{'\n'}- {
+                <Text style={uiSettings.global.textStyle}>{'\n'}- {
                   item.requirements?.join('\n- ')  
                 }</Text>
               </>
