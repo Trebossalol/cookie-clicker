@@ -1,13 +1,17 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
+import { useUISettings } from '../context/UiSettingsContext';
 
-export default (props?: { style?: any }) => (
-    <View style={{...styles.seperator, ...props?.style}}/>
-)
+
+export default (props?: { style?: any }) => {
+    const uiSettings = useUISettings();
+    return (
+        <View style={{...styles.seperator, borderColor: uiSettings.global.colorScheme === 'dark' ? '#d4d4d4' : 'grey', ...props?.style}}/>
+    )
+}
 
 const styles = StyleSheet.create({
     seperator: {
-        borderColor: 'grey',
         borderWidth: 1,
         borderStyle: 'solid',
         marginVertical: 8,

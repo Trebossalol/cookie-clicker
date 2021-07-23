@@ -4,9 +4,10 @@
  */
 
 import * as React from 'react';
-import { Text as DefaultText, View as DefaultView } from 'react-native';
+import { StyleProp, Text as DefaultText, View as DefaultView, ViewStyle } from 'react-native';
 
 import Colors from '../constants/Colors';
+import { useUISettings } from '../context/UiSettingsContext';
 import useColorScheme from '../hooks/useColorScheme';
 
 export function useThemeColor(
@@ -40,7 +41,10 @@ export function Text(props: TextProps) {
 
 export function View(props: ViewProps) {
   const { style, lightColor, darkColor, ...otherProps } = props;
-  const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'background');
+  const uiSettings = useUISettings()
+  const styleToApply: StyleProp<ViewStyle> = uiSettings.global.colorScheme === 'dark' ? ({
+    backgroundColor: '#1f1f1f'
+  }) : (undefined)
 
-  return <DefaultView style={[{ backgroundColor }, style]} {...otherProps} />;
+  return <DefaultView style={[styleToApply, style]} {...otherProps} />;
 }

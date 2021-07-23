@@ -25,6 +25,7 @@ export default (props: ClickerProps) => {
   const worldData = useWorldData()
   const levelDetails = useLevelDetails()
   const uiSettings = useUISettings()
+  
 
   React.useEffect(() => {
     let interval = setInterval(() => {
@@ -66,7 +67,7 @@ export default (props: ClickerProps) => {
             refreshing={refreshing}
             />
         }
-        contentContainerStyle={styles.container}>
+        contentContainerStyle={{...styles.container, backgroundColor: uiSettings.global.colorScheme === 'dark' ? '#292929' : 'white'}}>
 
           <ReactNativeView style={styles.headerView}>
 
@@ -79,17 +80,17 @@ export default (props: ClickerProps) => {
             <ReactNativeView style={styles.headerLevelDetails}>
               <ReactNativeView style={styles.headerXpDetails}>
                 <AnimatedNumber 
-                  style={styles.xpPart}
+                  style={{...styles.xpPart, ...uiSettings.global.textStyle}}
                   value={levelDetails.xp}
                 />
                 <MonoText style={styles.xpseperator}>/</MonoText>
                 <AnimatedNumber 
-                  style={styles.xpPart}
+                  style={{...styles.xpPart, ...uiSettings.global.textStyle}}
                   value={levelDetails.xpRequired}
                   formatter={n => ` ${n} XP`}
                 />
               </ReactNativeView>
-              <MonoText style={styles.level}>
+              <MonoText style={{...styles.level, ...uiSettings.global.textStyle}}>
                 Lvl: {levelDetails.level}
               </MonoText>
             </ReactNativeView>
@@ -111,15 +112,15 @@ export default (props: ClickerProps) => {
               </TouchableWithoutFeedback>
 
               <AnimatedNumber 
-                style={{ fontFamily: 'space-mono', fontSize: 27, color: 'black', width: '100%', height: 50, textAlign: 'center' }}
+                style={{ fontFamily: 'space-mono', fontSize: 27, width: '100%', height: 50, textAlign: 'center', ...uiSettings.global.textStyle }}
                 value={Math.round(game.cookies)}
               />
               {uiSettings.clicker.show_decimal && <AnimatedNumber 
-                style={{ fontFamily: 'space-mono', fontSize: 18, color: 'black', width: '100%', height: 50, textAlign: 'center' }}
+                style={{ fontFamily: 'space-mono', fontSize: 18, width: '100%', height: 50, textAlign: 'center', ...uiSettings.global.textStyle }}
                 value={game.cookies % 1 * 100000}
               />}
               <AnimatedNumber 
-                style={{ fontFamily: 'space-mono', fontSize: 25, color: 'black', width: '100%', height: 50, textAlign: 'center' }}
+                style={{ fontFamily: 'space-mono', fontSize: 25, width: '100%', height: 50, textAlign: 'center', ...uiSettings.global.textStyle }}
                 value={randomMultiplicator}
                 formatter={n => `x${n}`}
               />
@@ -206,16 +207,17 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '70%',
     justifyContent: 'center', 
-    alignItems: 'center'
+    alignItems: 'center',
+    borderRadius: 15,
   },
   bodyCard: {
     paddingVertical: 118,
     paddingHorizontal: 85,
-    borderRadius: 11,
+    borderRadius: 15,
     alignItems: 'center',
     justifyContent: 'center',
     width: '90%',
-    ...getBoxShadow(11)
+    ...getBoxShadow(15)
   },
   cookie: {
     resizeMode: 'stretch',

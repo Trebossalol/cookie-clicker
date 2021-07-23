@@ -6,14 +6,18 @@
 import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import * as React from 'react';
-import { ColorSchemeName, View, Text } from 'react-native';
+import { View, Text } from 'react-native';
+import { useUISettings } from '../context/UiSettingsContext';
 
 import NotFoundScreen from '../screens/NotFoundScreen';
 import { RootStackParamList } from '../types';
 import BottomTabNavigator from './BottomTabNavigator';
 import LinkingConfiguration from './LinkingConfiguration';
 
-export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
+export default function Navigation() {
+
+  const uiSettings = useUISettings()
+
   return (
     <NavigationContainer
       fallback={
@@ -22,7 +26,7 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
         </View>
       }
       linking={LinkingConfiguration}
-      theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+      theme={uiSettings.global.colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <RootNavigator />
     </NavigationContainer>
   );

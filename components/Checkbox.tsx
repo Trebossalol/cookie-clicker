@@ -24,7 +24,7 @@ export default (props: CheckboxProps) => {
 
     return (
         <TouchableNativeFeedback style={props.style}>
-            <Button color={props?.color ? props.color(checked) : (checked ? '#8cff66' : '#f54242')} title={props.title(checked)} onPress={() => setChecked(!checked)}/>
+            <Button color={props?.color ? props.color(checked) : (!checked ? '#8cff66' : '#f54242')} title={props.title(checked)} onPress={() => setChecked(!checked)}/>
         </TouchableNativeFeedback>
     )
 }

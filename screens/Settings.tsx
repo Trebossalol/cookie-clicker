@@ -37,15 +37,28 @@ export default (props: any) => {
     }
 
     return (
-        <ScrollView>
-            <TouchableHighlight>
-                <Button title='RESET' color='red' onPress={() => alert('Are you sure you want to reset your userdata ?', reset)}/>
+        <ScrollView contentContainerStyle={styles.container}>
+
+            <TouchableHighlight style={styles.item}>
+                <Button title='RESET' color='#a10000' onPress={() => alert('Are you sure you want to reset your userdata ?', reset)}/>
             </TouchableHighlight>
-            <Checkbox
-                defaultValue={uiSettings.clicker.show_decimal}
-                onChange={(checked) => uiSettings.edit(e => ({ ...e, clicker: { ...e.clicker, show_decimal: checked } }))}
-                title={checked => checked ? 'Dezimalstellen ausblenden' : 'Dezimalstellen anzeigen'}
-            />
+
+            <TouchableHighlight style={styles.item}>
+                <Checkbox
+                    defaultValue={uiSettings.clicker.show_decimal}
+                    onChange={(checked) => uiSettings.edit(e => ({ ...e, clicker: { ...e.clicker, show_decimal: checked } }))}
+                    color={checked => checked ? '#1cff20' : '#ff1c1c'}
+                    title={checked => checked ? 'Hide decimals' : 'Show decimals'}
+                />
+            </TouchableHighlight>
+
+            <TouchableHighlight style={styles.item}>
+                <Checkbox
+                    defaultValue={uiSettings.global.colorScheme === 'light' ? false : true}
+                    onChange={(checked) => uiSettings.edit(e => ({ ...e, global: { ...e.global, colorScheme: checked ? 'dark' : 'light' } }))}
+                    title={checked => checked ? 'Disable darkmode' : 'Enable darkmode'}
+                />
+                </TouchableHighlight>
         </ScrollView>
     );
 }
@@ -55,5 +68,9 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  item: {
+    padding: 15,
+    width: 320,
   }
 });
