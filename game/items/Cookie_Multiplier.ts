@@ -8,20 +8,21 @@ const item: Item = {
     id: 'ffb8c17d-0521-4068-856c-16e163e745d7',
     maxLvl: 100,
     requirements: [
-        'You must have a total amount of cookies which was atleast 400k',
-        'Your cookie factory level must be atleast 3'
+        'You must have a total amount of cookies which was atleast 500k',
+        'Your cookie factory level must be atleast 3',
+        'You must be level 20'
     ],
-    unlocked: ({ cookieData, cachedItems }) => {
+    unlocked: ({ cookieData, cachedItems, levelDetails }) => {
         const cookieFactory = cachedItems.find(e => e.id === CookieFactory.id)
-        return cookieData.total > 400000 && (cookieFactory?.level || 0) >= 3
+        return cookieData.total > 500000 && (cookieFactory?.level || 0) >= 3 && levelDetails.level >= 20
     },
     calcNextPrice: ({ cache, cachedItems }) => {
         const cookieFactory = cachedItems.find(e => e.id === CookieFactory.id)
-        let price = Math.pow((cache?.level || 1) * 190, 2)
+        let price = Math.pow((cache?.level || 1) * 160, 1.6)
         if ((cookieFactory?.level || 1) >= 25) price *= .7
         return price
     },
-    onTick: ({ cache }) => (cache?.level || 1) * 8,
+    onTick: ({ cache }) => (cache?.level || 1) * 10,
     multiplicator: () => {
         const randNum = getRandNumber(1, 100)
         if (randNum > 80) return getRandNumber(2, 3)

@@ -46,7 +46,7 @@ export function LevelProvider(props: any) {
     const [level, setLevel] = React.useState<number>(-1)
     const [callbacks, setCallbacks] = React.useState<CallbackState[]>([])
 
-    const xpRequired = React.useMemo(() => Math.round(Math.pow(level + 2, level < 10 ? 2.1 : 2.8)), [level])
+    const xpRequired = React.useMemo(() => Math.round(Math.pow(level + 2, level < 10 ? 2.5 : 2.9)), [level])
     const xpRelation = React.useMemo(() => xp / xpRequired, [xp, xpRequired])
     const details = React.useMemo<ExtendedLevelDetails>(() => ({ level, xp, xpRequired, xpRelation, addXp, bindCallback, unbindCallback }), [xp, level, xpRequired, xpRelation])
     const levelDetails = React.useMemo<LevelDetails>(() => ({ xp, level }), [xp, level])

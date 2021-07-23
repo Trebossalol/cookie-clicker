@@ -14,8 +14,8 @@ const item: Item = {
         const finger = cachedItems.find(e => e.id === Finger.id)
         return cookieData.total > 1000 && (finger?.level || 0) > (cache?.level || 1) * 2 && levelDetails.level >= 10
     },
-    calcNextPrice: ({ cache }) => Math.pow((cache?.level || 1) * 63, 1.65),
-    onTick: ({ cache }) => (cache?.level || 1) * 2
+    calcNextPrice: ({ cache }) => Math.pow((cache?.level || 1) * 63, 1.3),
+    onTick: ({ cache }) => (cache?.level || 1) / 2 * 2
 }
 
 export default item

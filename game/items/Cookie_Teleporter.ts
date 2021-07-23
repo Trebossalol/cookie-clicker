@@ -7,13 +7,13 @@ const item: Item = {
     id: '9174968b-b68c-4098-861c-adc05b8e1a09',
     requirements: [
         'You must have a total amount of cookies above 3 Million',
-        'You must be level 15'
+        'You must be level 25'
     ],
-    unlocked: ({ cookieData, levelDetails }) => cookieData.total > 3000000 && levelDetails.level >= 15,
+    unlocked: ({ cookieData, levelDetails }) => cookieData.total > 3000000 && levelDetails.level >= 25,
     calcNextPrice: ({ cache }) => {
         const lvl = (cache?.level || 1) + 2
         const raised = Math.pow(lvl, 2)
-        return lvl * raised * 8500
+        return lvl * raised * 10
     },
     onTick: ({ cache }) => {
         const randNum = getRandNumber(1, 100)

@@ -51,7 +51,6 @@ export function GameProvider(props: GameProviderProps) {
     const [cookies, setCookies] = React.useState(0)
     const [totalCookies, setTotalCookies] = React.useState<number>(0)
 
-
     React.useEffect(() => {
         loadGameData()
         levelDetails.bindCallback(callbackEventName, 'LEVEL_UP', ({ level }) => {
@@ -101,12 +100,16 @@ export function GameProvider(props: GameProviderProps) {
         if (incomeManagerLevel != undefined) multiplicators.push(1 + (incomeManagerLevel * (IncomeManager.co_efficient?.value || 0.0025)))
 
         // Calculate the final amount
-        const earned = multiplicators
+        const earnedCookies = multiplicators
             .reduce((pv, cv) => pv * cv, amount)
+            
+        const earnedXp = multiplicators
+            .reduce((pv, cv) => pv * cv, 1)
 
-        addToTotalCookie(earned)
-        setCookies(e => e + earned)
-        levelDetails.addXp(1)
+        addToTotalCookie(earnedCookies)
+        setCookies(e => e + earnedCookies)
+
+        levelDetails.addXp(earnedXp)
     }, [worldData, cachedItems])
 
     /**
