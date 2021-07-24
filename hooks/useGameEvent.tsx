@@ -22,8 +22,10 @@ interface UseGameEventProps {
     percentageChances?:  number
 }
 
+export type UseGameEventElement = (eventProps: EventProps) => JSX.Element | null
+
 export interface UseGameEventRv {
-    Event: (eventProps: EventProps) => JSX.Element | null
+    Event: UseGameEventElement
     multiplicators: number[] | null
 }
 

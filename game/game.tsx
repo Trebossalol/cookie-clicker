@@ -8,7 +8,7 @@ import { retrieve, store } from '../util/storage';
 import { GameDataRegistry } from './registry';
 import { useLevelDetails } from '../context/LevelContext';
 import { ToastAndroid } from 'react-native';
-import useGameEvent, { UseGameEventRv } from '../hooks/useGameEvent';
+import useGameEvent, { UseGameEventElement, UseGameEventRv } from '../hooks/useGameEvent';
 
 
 const GameContext = React.createContext<GameData>({
@@ -43,18 +43,11 @@ interface GameProviderProps {
 
 const callbackEventName = 'ADD_COOKIES_ON_LEVEL_UP'
 
-export function GameProvider(props: GameProviderProps) {
-
-    const setUpdatePending = useSetUpdatePending()
-    const updatePending = useUpdatePending()
-    const worldData = useWorldData()
-    const levelDetails = useLevelDetails()
-
-    const events = [
+const eventsToLoad = [
         useGameEvent({ 
-            eventTitle: '+ 70% Cookies & XP', 
+            eventTitle: '+ 50% Cookies & XP', 
             price: 15000, 
-            onSuccess: () => [1.7],
+            onSuccess: () => [1.5],
             eventDuration: 23000,
             percentageChances: 0.25
         }),
@@ -72,8 +65,17 @@ export function GameProvider(props: GameProviderProps) {
             eventDuration: 12000,
             percentageChances: 0.05
         })
-    ]
+]
 
+export function GameProvider(props: GameProviderProps) {
+
+    const setUpdatePending = useSetUpdatePending()
+    const updatePending = useUpdatePending()
+    const worldData = useWorldData()
+    const levelDetails = useLevelDetails()
+
+
+    const [events, setEvents] = React.useState<UseGameEventRv[]>([])
     const [cachedItems, setCachedItems] = React.useState<CachedItemList>([])
 
     const [cpsData, setCpsData] = React.useState<CpsData>({ cps: 0 })
@@ -81,6 +83,7 @@ export function GameProvider(props: GameProviderProps) {
     const [totalCookies, setTotalCookies] = React.useState<number>(0)
 
     React.useEffect(() => {
+        setEvents(eventsToLoad)
         loadGameData()
         levelDetails.bindCallback(callbackEventName, 'LEVEL_UP', ({ level }) => {
             const amount = Math.round(Math.pow(level + 1, 2) * (level >= 10 ? 65 : 7))
@@ -142,7 +145,7 @@ export function GameProvider(props: GameProviderProps) {
         setCookies(e => e + earnedCookies)
 
         levelDetails.addXp(earnedXp)
-    }, [worldData, cachedItems])
+    }, [worldData, cachedItems, events])
 
     /**
      * @description This function removes the cookies from the counter, returns false if not enough cookies
