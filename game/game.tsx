@@ -8,13 +8,16 @@ import { retrieve, store } from '../util/storage';
 import { GameDataRegistry } from './registry';
 import { useLevelDetails } from '../context/LevelContext';
 import { ToastAndroid } from 'react-native';
+import useGameEvent, { UseGameEventRv } from '../hooks/useGameEvent';
 
 
 const GameContext = React.createContext<GameData>({
     addCookies: () => {},
+    removeCookies: () => true,
     cacheData: () => Promise.resolve(),
     cachedItems: [], 
     cookies: 0,
+    events: [],
     sync: () => Promise.resolve(),
     totalCookies: 0
 })
@@ -28,7 +31,9 @@ export interface GameData {
     totalCookies: number
     cachedItems: CachedItemList
     addCookies: (amount: number, multiplicators?: number[]) => void
+    removeCookies: (amount: number) => boolean
     cacheData: () => Promise<void>
+    events: UseGameEventRv[]
     sync: () => Promise<void>
 }
 
@@ -44,6 +49,30 @@ export function GameProvider(props: GameProviderProps) {
     const updatePending = useUpdatePending()
     const worldData = useWorldData()
     const levelDetails = useLevelDetails()
+
+    const events = [
+        useGameEvent({ 
+            eventTitle: '+ 70% Cookies & XP', 
+            price: 15000, 
+            onSuccess: () => [1.7],
+            eventDuration: 23000,
+            percentageChances: 0.1
+        }),
+        useGameEvent({ 
+            eventTitle: '+ 150% Cookies & XP', 
+            price: 20000, 
+            onSuccess: () => [2.5],
+            eventDuration: 15000,
+            percentageChances: 0.075
+        }),
+        useGameEvent({ 
+            eventTitle: '+ 300% Cookies & XP', 
+            price: 25000, 
+            onSuccess: () => [3],
+            eventDuration: 12000,
+            percentageChances: 0.03
+        })
+    ]
 
     const [cachedItems, setCachedItems] = React.useState<CachedItemList>([])
 
@@ -89,11 +118,14 @@ export function GameProvider(props: GameProviderProps) {
 
     /**
      * @description This function adds the cookies to the state and updates the totalCookies property
-     * @dependencies *WorldData.multiplicator*
+     * @dependencies *WorldData.multiplicator*, event multiplicators, income_manager lvl
      */
     const addCookies = React.useCallback((amount: number, multiplicators: number[] = []) => {
         // World data multiplicator
         multiplicators.push(worldData.multiplicator)
+
+        // Event multiplicators
+        events.forEach(Ev => Ev.multiplicators && multiplicators.push(...Ev.multiplicators))
 
         // Income manager multiplicator
         const incomeManagerLevel = cachedItems.find(e => e.id === IncomeManager.id)?.level
@@ -111,6 +143,15 @@ export function GameProvider(props: GameProviderProps) {
 
         levelDetails.addXp(earnedXp)
     }, [worldData, cachedItems])
+
+    /**
+     * @description This function removes the cookies from the counter, returns false if not enough cookies
+     */
+    const removeCookies = React.useCallback((amount: number): boolean => {
+        if (cookies - amount < 0) return false
+        setCookies(e => e - amount)
+        return true
+    }, [worldData, cachedItems, cookies])
 
     /**
      * @description This function renders on each game-render-iteration
@@ -172,10 +213,12 @@ export function GameProvider(props: GameProviderProps) {
             totalCookies,
             cachedItems,
             addCookies,
+            removeCookies,
             cacheData,
             sync: loadGameData,
+            events
         }
-    }, [cookies, totalCookies, cachedItems, addCookies, cacheData, loadGameData])
+    }, [cookies, totalCookies, cachedItems, addCookies, removeCookies, cacheData, loadGameData, events])
 
     return (
         <GameContext.Provider value={gameData()}>

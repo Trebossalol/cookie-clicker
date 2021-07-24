@@ -26,12 +26,6 @@ export default (props: ClickerProps) => {
   const worldData = useWorldData()
   const levelDetails = useLevelDetails()
   const uiSettings = useUISettings()
-  const Event = useGameEvent({ 
-    eventTitle: '+ 50% Cookies & XP', 
-    price: 10000, 
-    onSuccess: () => [1.5],
-    durationMs: 20000
-  })
 
   React.useEffect(() => {
     let interval = setInterval(() => {
@@ -59,9 +53,8 @@ export default (props: ClickerProps) => {
 
   const addCookie = React.useCallback((amount: number) => {
     const multiplicators = [randomMultiplicator]
-    if (Event.multiplicators) multiplicators.push(...Event.multiplicators)
     game.addCookies(amount, multiplicators)
-  }, [randomMultiplicator, Event.multiplicators])
+  }, [randomMultiplicator])
 
   function navigateTo(location: string, params?: object): void {
     props.navigation.navigate(location, params)
@@ -139,7 +132,7 @@ export default (props: ClickerProps) => {
           </ReactNativeView>
           
           <ReactNativeView style={styles.footerView}>
-            <Event.Event />
+            {game.events.map(Ev => <Ev.Event key={Math.random()}/>)}
           </ReactNativeView>
       </ScrollView>
   );
