@@ -56,21 +56,21 @@ export function GameProvider(props: GameProviderProps) {
             price: 15000, 
             onSuccess: () => [1.7],
             eventDuration: 23000,
-            percentageChances: 0.1
+            percentageChances: 0.25
         }),
         useGameEvent({ 
             eventTitle: '+ 150% Cookies & XP', 
             price: 20000, 
             onSuccess: () => [2.5],
             eventDuration: 15000,
-            percentageChances: 0.075
+            percentageChances: 0.1
         }),
         useGameEvent({ 
             eventTitle: '+ 300% Cookies & XP', 
             price: 25000, 
             onSuccess: () => [3],
             eventDuration: 12000,
-            percentageChances: 0.03
+            percentageChances: 0.05
         })
     ]
 
